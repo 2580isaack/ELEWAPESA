@@ -762,9 +762,6 @@ Original file is located at
 #          st.title("Real-time Mobile money Monitoring")
 #          st.markdown("Integration in progress... Live API connectivity will display here once credentials are set.")
 
-import threading
-import os
-from pyngrok import ngrok
 def run_streamlit():
     os.system("streamlit run app.py")
 os.environ["BROWSER_GATHER_USAGE_STATS"] = "false"
