@@ -763,13 +763,3 @@ Original file is located at
 #          st.title("Real-time Mobile money Monitoring")
 #          st.markdown("Integration in progress... Live API connectivity will display here once credentials are set.")
 
-import threading
-import os
-from pyngrok import ngrok
-def run_streamlit():
-    os.system("streamlit run app.py")
-os.environ["BROWSER_GATHER_USAGE_STATS"] = "false"
-threading.Thread(target=run_streamlit).start()
-ngrok.set_auth_token("2wgwHmFlV02P3dBq1fRuuA0tW58_uB9Rz61BT6Le22PJuYzp")
-public_url = ngrok.connect(8501)
-print("Streamlit app is running at:", public_url)
