@@ -9,16 +9,6 @@ Original file is located at
 
 #import os
 #os._exit(0)
-
-#!pip install streamlit pyngrok pandas numpy matplotlib seaborn shap plotly scikit-learn pyngrok --quiet
-#!pip install bcrypt --quiet
-#!pip install streamlit pyngrok pandas numpy matplotlib seaborn shap plotly scikit-learn pyngrok --quiet
-#!pip install bcrypt --quiet
-#!pip install shap --quiet
-#!pip install pyngrok --quiet
-#!pip install streamlit pandas numpy matplotlib seaborn plotly statsmodels scikit-learn shap --quiet
-
-# Commented out IPython magic to ensure Python compatibility.
  %%writefile app.py
  import json
  import csv
