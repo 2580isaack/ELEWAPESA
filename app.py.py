@@ -8,7 +8,8 @@ Original file is located at
 """
 
 # Commented out IPython magic to ensure Python compatibility.
-# import os
+# import streamlit as st
+#import os
 # %%writefile app.py
 # import json
 # import csv
@@ -762,3 +763,7 @@ Original file is located at
 #      if st.session_state.logged_in:
 #          st.title("Real-time Mobile money Monitoring")
 #          st.markdown("Integration in progress... Live API connectivity will display here once credentials are set.")
+# st.set_page_config(page_title="ElewaPesa Dashboard", layout="wide")
+
+# st.title("💸 ElewaPesa – Smart Financial Literacy Dashboard")
+# st.write("Welcome to the ElewaPesa dashboard! Analyze youth financial behaviors and trends.")
