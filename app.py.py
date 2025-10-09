@@ -7,8 +7,8 @@
  #   https://colab.research.google.com/drive/1bm0qIT3CCjQs0RkuXiHA-dxiRdfLXhqf
 #"""
 
- Commented out IPython magic to ensure Python compatibility.
- import streamlit as st
+Commented out IPython magic to ensure Python compatibility.
+import streamlit as st
 import os
  %%writefile app.py
  import json
