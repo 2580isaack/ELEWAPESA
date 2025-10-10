@@ -83,22 +83,14 @@ def signup_form():
     st.subheader("Create Account")
     username = st.text_input("Choose a Username")
     password = st.text_input("Choose a Password", type="password")
-
-    # Add optional secret admin key input
     st.markdown("If you're an admin, enter your secure admin access key below:")
     admin_key_input = st.text_input("Admin Access Key (leave blank if not admin)", type="password")
-
-    # Set your secret admin key here (keep this private!)
     SECRET_ADMIN_KEY = "ElewaPesa@Secure2025"  # you can change this
-
     if st.button("Sign Up"):
         if not username or not password:
             st.warning("Please fill in all required fields.")
             return
-
-        # Only assign admin role if correct secret key is provided
         is_admin = 1 if admin_key_input == SECRET_ADMIN_KEY else 0
-
         success = add_user(username, password, is_admin)
         if success:
             if is_admin:
@@ -107,8 +99,6 @@ def signup_form():
                 st.success(f"User account '{username}' created successfully.")
         else:
             st.error("Username already exists. Please choose another.")
-
-
 def log_user_activity(username, activity):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
@@ -169,7 +159,6 @@ def get_visible_pages():
     for page in default_pages:
         c.execute("INSERT OR IGNORE INTO page_visibility (page_name, is_visible) VALUES (?, ?)", (page, 1))
     conn.commit()
-
     c.execute("SELECT page_name, is_visible FROM page_visibility")
     visibility_data = c.fetchall()
     conn.close()
@@ -258,8 +247,6 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-
-# --- Initialize Session State Variables ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "username" not in st.session_state:
@@ -268,11 +255,7 @@ if "is_admin" not in st.session_state:
     st.session_state.is_admin = False
 if "nav_selection" not in st.session_state:
     st.session_state.nav_selection = "Login"
-
-# --- Determine Page Visibility ---
 page_visibility = get_visible_pages()
-
-# --- Build Navigation Menu ---
 if st.session_state.logged_in:
     menu = []
 
@@ -288,8 +271,6 @@ if st.session_state.logged_in:
         menu.append("Literature")
     if page_visibility.get("Mobile money Monitor", True):
         menu.append("Mobile money Monitor")
-
-    # Show Admin Dashboard only if user is admin
     if st.session_state.is_admin:
         menu.append("Admin Dashboard") #else: hide admin link entirel
         menu.append("Logout")
@@ -302,11 +283,9 @@ if nav_default not in menu:
     nav_default = menu[0]
 choice = st.sidebar.selectbox("Navigation", menu, index=menu.index(nav_default))
 st.session_state.nav_selection = choice
-
 if choice == "Login":
     st.title("Login to ElewaPesa")
     login_type = st.radio("Login as:", ("User", "Admin"))
-
     username = st.text_input("Username")
     password = st.text_input("Password", type='password')
     if st.button("Login"):
@@ -331,7 +310,6 @@ if choice == "Login":
             c.execute("SELECT password FROM users WHERE username = ? AND is_admin = 1", (username,))
             result = c.fetchone()
             conn.close()
-
             if result and bcrypt.checkpw(password.encode(), result[0]):
                 st.session_state.logged_in = True
                 st.session_state.username = username
@@ -407,7 +385,6 @@ elif choice == "Admin Dashboard":
             st.dataframe(user_df)
         else:
             st.info("No users registered yet.")
-
         st.markdown("### User Activity Logs")
         logs = get_activity_logs()
         if logs:
@@ -415,17 +392,14 @@ elif choice == "Admin Dashboard":
             st.dataframe(log_df)
         else:
             st.info("No user activity logs found.")
-
         st.markdown("### Manage User Content (Placeholder)")
         st.warning("This is a placeholder. Implementing full content management requires a more robust database structure and UI.")
         all_users = [user[0] for user in get_all_users()]
         selected_user_for_content = st.selectbox("Select a user to manage content for:", ["-- Select User --"] + all_users)
-
         if selected_user_for_content != "-- Select User --":
             user_current_content = get_user_content(selected_user_for_content)
             st.write(f"Current content for {selected_user_for_content}:")
             st.json(user_current_content)
-
             new_content_json = st.text_area("Enter new content (JSON format):", json.dumps(user_current_content, indent=2))
             if st.button(f"Update content for {selected_user_for_content}"):
                 try:
@@ -442,8 +416,6 @@ elif choice == "Admin Dashboard":
                  st.success(f"All content cleared for {selected_user_for_content}.")
                  log_user_activity(st.session_state.username, f"Cleared content for {selected_user_for_content}")
                  st.rerun()
-
-
         st.markdown("### Manage Page Visibility")
         current_visibility = get_visible_pages()
         st.write("Control which pages are visible to non-admin users.")
@@ -454,7 +426,6 @@ elif choice == "Admin Dashboard":
                 st.info(f"Visibility of '{page}' page updated. Changes will be reflected on the next page load.")
                 log_user_activity(st.session_state.username, f"Set visibility of '{page}' to {new_visibility}")
                 st.rerun()
-
         st.markdown("### Add New Admin User")
         new_admin_user = st.text_input("New Admin Username")
         new_admin_pass = st.text_input("New Admin Password", type='password')
@@ -501,7 +472,6 @@ elif choice == "Home":
                         st.session_state.nav_selection = "Budgeting"
                         st.rerun()
                     st.caption("Use the budgeting tool to allocate income across categories.")
-
                 if page_visibility.get("Mobile money Monitor", True) or st.session_state.is_admin:
                     if st.button("Mobile money Monitor"):
                         st.session_state.nav_selection = "Mobile money Monitor"
@@ -526,10 +496,8 @@ elif choice == "About":
             with st.expander("Vision and Mission"):
                 st.markdown("""
                 **Vision:** To become the leading financial consultancy and budgeting solutions provider for SACCOs and Kenyans.
-
                 **Mission:** To empower financial growth through data-driven tools, personalized insights, and accessible financial education.
                 """)
-
             st.markdown("### Services Offered by Elewa Pesa")
             services = {
                 "Financial Consultancy for SACCOs": [
@@ -579,7 +547,6 @@ elif choice == "About":
             In Kenya, SACCOs have become pivotal in improving access to financial services, and understanding their structure
             and offerings is vital for inclusive growth.
             """)
-
             st.markdown("Contact Us")
             st.markdown("""
             - **Email:** [support@elewapesa.com](mailto:support@elewapesa.com)
@@ -593,7 +560,6 @@ elif choice == "About":
         st.warning("This page is currently hidden by the administrator.")
         st.session_state.nav_selection = "Login"
         st.rerun()
-
 elif choice == "SACCO Interface":
     if page_visibility.get("SACCO Interface", True) or st.session_state.is_admin:
         if st.session_state.logged_in:
@@ -607,36 +573,27 @@ elif choice == "SACCO Interface":
             from sklearn.preprocessing import StandardScaler
             import shap
             import pandas as pd
-
             st.title("SACCO Data Upload & Analysis")
-
             uploaded_file = st.file_uploader("Upload your SACCO data (CSV format)", type="csv")
-
             if uploaded_file is not None:
                 log_user_activity(st.session_state.username, "Uploaded SACCO data")  # Log upload
                 df = pd.read_csv(uploaded_file)
-
                 if 'User_ID' in df.columns:
                     df = df.drop(columns=['User_ID'])
-
                 st.dataframe(df.head())
-
                 required_cols = ['Date', 'Income', 'Expenses', 'Savings']
                 if not all(col in df.columns for col in required_cols):
                     st.info(f"Financial analysis requires columns: {', '.join(required_cols)}.")
                     st.stop()
-
                 df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
                 df = df.dropna(subset=['Date'])
                 df = df.sort_values('Date').set_index('Date')
-
                 st.sidebar.header("Filters")
                 if 'Region' in df.columns:
                     regions = df['Region'].dropna().unique()
                     selected_regions = st.sidebar.multiselect("Select Region(s)", options=regions, default=list(regions))
                 else:
                     selected_regions = []
-
                 date_min = df.index.min()
                 date_max = df.index.max()
                 selected_date_range = st.sidebar.date_input("Select Date Range", value=(date_min, date_max), min_value=date_min, max_value=date_max)
@@ -644,42 +601,33 @@ elif choice == "SACCO Interface":
                 if selected_regions and 'Region' in df.columns:
                     df = df[df['Region'].isin(selected_regions)]
                 df = df.loc[selected_date_range[0]:selected_date_range[1]]
-
                 if df.empty:
                     st.warning("No data available after applying filters.")
                     st.stop()
-
                 st.markdown("### Summary Statistics")
                 st.write(df.describe())
-
                 st.markdown("### Financial Ratios")
                 df['Savings_Rate'] = df['Savings'] / df['Income'].replace(0, pd.NA)
                 df['Expense_Ratio'] = df['Expenses'] / df['Income'].replace(0, pd.NA)
                 st.write(df[['Savings_Rate', 'Expense_Ratio']].describe())
-
                 df_monthly = df.resample('M').sum()
-
                 st.markdown("### Monthly Aggregated Income, Expenses and Savings")
                 fig_monthly, ax_monthly = plt.subplots(figsize=(10, 6))
                 df_monthly[['Income', 'Expenses', 'Savings']].plot(ax=ax_monthly)
                 ax_monthly.set_title("Monthly Aggregated Income, Expenses and Savings")
                 st.pyplot(fig_monthly)
-
                 st.markdown("### Distribution of Income")
                 fig_income, ax_income = plt.subplots()
                 sns.histplot(df['Income'], kde=True, ax=ax_income, bins=30)
                 st.pyplot(fig_income)
-
                 st.markdown("### Distribution of Savings")
                 fig_savings, ax_savings = plt.subplots()
                 sns.histplot(df['Savings'], kde=True, ax=ax_savings, bins=30)
                 st.pyplot(fig_savings)
-
                 st.markdown("### Box Plots of Income, Expenses and Savings")
                 fig_box, ax_box = plt.subplots()
                 sns.boxplot(data=df[['Income', 'Expenses', 'Savings']], ax=ax_box)
                 st.pyplot(fig_box)
-
                 st.markdown("### Scatter Plot: Income vs Expenses colored by Savings")
                 fig_scatter, ax_scatter = plt.subplots()
                 sc = ax_scatter.scatter(features['Income'], features['Expenses'], c=features['Cluster'], cmap='Set1', alpha=0.6)
@@ -689,30 +637,25 @@ elif choice == "SACCO Interface":
                 legend1 = ax_scatter.legend(*sc.legend_elements(), title="Clusters")
                 ax_scatter.add_artist(legend1)
                 st.pyplot(fig_scatter)
-
                 st.markdown("### Savings Rate Over Time")
                 fig_srate, ax_srate = plt.subplots()
                 df['Savings_Rate'].plot(ax=ax_srate)
                 ax_srate.set_title("Savings Rate Over Time")
                 st.pyplot(fig_srate)
-
                 if 'Region' in df.columns and selected_regions:
                     st.markdown("### Average Income by Region")
                     avg_income = df.groupby('Region')['Income'].mean().loc[selected_regions]
                     fig_reg_income = px.bar(avg_income, title="Average Income by Region")
                     st.plotly_chart(fig_reg_income)
-
                     st.markdown("### Average Savings by Region")
                     avg_savings = df.groupby('Region')['Savings'].mean().loc[selected_regions]
                     fig_reg_savings = px.bar(avg_savings, title="Average Savings by Region")
                     st.plotly_chart(fig_reg_savings)
-
                 st.markdown("### Cumulative Income vs Cumulative Expenses Over Time")
                 cum_df = df[['Income', 'Expenses']].cumsum()
                 fig_cum, ax_cum = plt.subplots()
                 cum_df.plot(ax=ax_cum)
                 st.pyplot(fig_cum)
-
                 st.markdown("### Hypothesis Test: Expenses Before vs After Budgeting Start Date")
                 budget_start = st.date_input("Select budgeting start date", value=date_min)
                 before = df[df.index < pd.to_datetime(budget_start)]['Expenses']
@@ -726,7 +669,6 @@ elif choice == "SACCO Interface":
                         st.info("No significant difference detected in expenses after budgeting started.")
                 else:
                     st.info("Not enough data to perform hypothesis test.")
-
                 st.markdown("### Income Seasonality Decomposition")
                 try:
                     decomposition = seasonal_decompose(df['Income'], model='additive', period=12)
@@ -734,7 +676,6 @@ elif choice == "SACCO Interface":
                     st.pyplot(fig_decomp)
                 except Exception as e:
                     st.warning(f"Seasonality decomposition failed: {e}")
-
                 st.markdown("### Income Forecast (next 6 months)")
                 try:
                     model = ARIMA(df['Income'], order=(1, 1, 1))
@@ -750,7 +691,6 @@ elif choice == "SACCO Interface":
                     st.write(forecast_series)
                 except Exception as e:
                     st.warning(f"Forecasting failed: {e}")
-
                 st.markdown("### Clustering Analysis (KMeans)")
                 try:
                     features = df[['Income', 'Expenses', 'Savings']].dropna()
@@ -759,7 +699,6 @@ elif choice == "SACCO Interface":
                     kmeans = KMeans(n_clusters=3, random_state=42)
                     clusters = kmeans.fit_predict(scaled_features)
                     features = features.assign(Cluster=clusters)
-
                     fig_cluster, ax_cluster = plt.subplots()
                     scatter = ax_cluster.scatter(features['Income'], features['Expenses'], c=features['Cluster'], cmap='Set1', alpha=0.6)
                     ax_cluster.set_xlabel('Income')
@@ -770,7 +709,6 @@ elif choice == "SACCO Interface":
                     st.pyplot(fig_cluster)
                 except Exception as e:
                     st.warning(f"Clustering failed: {e}")
-
                 st.markdown("### SHAP Explainability for Savings Prediction")
                 try:
                     import sklearn.linear_model as lm
@@ -783,10 +721,8 @@ elif choice == "SACCO Interface":
                     st.pyplot(shap.summary_plot(shap_values, features_shap, show=False))
                 except Exception as e:
                     st.warning(f"SHAP analysis failed: {e}")
-
                 csv = df.reset_index().to_csv(index=False).encode()
                 st.download_button(label="Download Processed SACCO Data as CSV", data=csv, file_name='processed_sacco_data.csv', mime='text/csv')
-
 elif choice == "Budgeting":
     if st.session_state.logged_in:
         st.title("Budgeting Tool")
@@ -820,12 +756,8 @@ elif choice == "Literature":
             """,
             unsafe_allow_html=True
         )
-
         st.markdown("### 🌍 Explore Featured Learning Materials")
-
         col1, col2 = st.columns(2)
-
-        # --- Column 1 ---
         with col1:
             # Personal Budgeting
             st.markdown(
@@ -863,8 +795,6 @@ elif choice == "Literature":
                 unsafe_allow_html=True
             )
             st.markdown("**[Financial Education for African Youth – Aflatoun](https://www.aflatoun.org/)**")
-
-        # --- Column 2 ---
         with col2:
             # Saving & Investing – CMA Kenya
             st.markdown(
