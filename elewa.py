@@ -277,8 +277,7 @@ if st.session_state.logged_in:
     if page_visibility.get("Literature", True): menu.append("Literature")
     if page_visibility.get("Mobile money Monitor", True): menu.append("Mobile money Monitor")
     menu.append("Logout")
-
-   if st.session_state.is_admin:
+ if st.session_state.is_admin:
     menu.append("Admin Dashboard")
    #else: hide admin link entirely
 nav_default = st.session_state.get("nav_selection")
