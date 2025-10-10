@@ -15,7 +15,6 @@ pyngrok==7.2.1
 datetime
 jsonschema==4.23.0
 openpyxl==3.1.5
-
 streamlit
 pandas
 numpy
