@@ -32,8 +32,7 @@ import csv
 import io
 import base64
 import sqlite3
-import bcrypt
-
+import bcrypt as bcrypt
 from datetime import datetime
 import streamlit as st
 import pandas as pd
