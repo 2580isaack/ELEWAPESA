@@ -21,7 +21,7 @@ try:
     st.success("bcrypt imported successfully")
 except Exception as e:
     st.error(f"bcrypt import failed: {e}")
-import bcrypt
+#import bcrypt
 # Commented out IPython magic to ensure Python compatibility.
 import streamlit as st
 import os
