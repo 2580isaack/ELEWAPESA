@@ -36,6 +36,9 @@ import io
 from scipy import stats
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.arima.model import ARIMA
+import sqlite3
+def get_connection():
+    return sqlite3.connect("users.db")
 def init_db():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
