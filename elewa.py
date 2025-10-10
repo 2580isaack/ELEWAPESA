@@ -15,7 +15,7 @@ Original file is located at
 #Original file is located at
  #   https://colab.research.google.com/drive/1bm0qIT3CCjQs0RkuXiHA-dxiRdfLXhqf
 #"""
-
+import bcrypt
 # Commented out IPython magic to ensure Python compatibility.
 import streamlit as st
 import os
@@ -29,8 +29,6 @@ from datetime import datetime
 import streamlit as st
 import pandas as pd
 import numpy as np
-import bcrypt
-
 # Machine Learning / Stats
 
 
