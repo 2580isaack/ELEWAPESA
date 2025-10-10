@@ -296,6 +296,8 @@ if st.session_state.logged_in:
 nav_default = st.session_state.get("nav_selection")
 if nav_default not in menu:
     nav_default = menu[0]
+ else:
+    menu = ["Login", "Register", "About"]
 
 choice = st.sidebar.selectbox("Navigation", menu, index=menu.index(nav_default))
 st.session_state.nav_selection = choice
