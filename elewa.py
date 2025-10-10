@@ -439,10 +439,9 @@ elif choice == "Admin Dashboard":
             else:
                 st.error("Please fill in all fields.")
         else:
-        st.warning("You do not have permission to access this page.")
-        st.session_state.nav_selection = "Login"
-        st.rerun()
-
+         st.warning("You do not have permission to access this page.")
+         st.session_state.nav_selection = "Login"
+         st.rerun()
 elif choice == "Home":
     if page_visibility.get("Home", True) or st.session_state.is_admin:
         if st.session_state.logged_in:
