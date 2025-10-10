@@ -69,7 +69,7 @@ def add_user(username, password, is_admin=0):
     except sqlite3.IntegrityError:
         conn.close()
         return False
- def create_admin_account():
+def create_admin_account():
     username = "admin"
     password = "YourStrongAdminPass123!"
     conn = sqlite3.connect("users.db")
