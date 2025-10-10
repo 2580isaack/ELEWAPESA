@@ -53,9 +53,16 @@ def init_db():
             activity TEXT
         )
     ''')
+    c.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        username TEXT PRIMARY KEY,
+        password BLOB NOT NULL,
+        is_admin INTEGER DEFAULT 0,
+        is_active INTEGER DEFAULT 1
+        )
+        ''')
     conn.commit()
     conn.close()
-
 init_db()
 def add_user(username, password, is_admin=0):
     conn = sqlite3.connect("users.db")
@@ -72,11 +79,15 @@ def add_user(username, password, is_admin=0):
 def check_login(username, password):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
-    c.execute("SELECT password, is_admin FROM users WHERE username = ?", (username,))
+    c.execute("SELECT password, is_admin, is_active FROM users WHERE username = ?", (username,))
     result = c.fetchone()
     conn.close()
-    if result and bcrypt.checkpw(password.encode(), result[0]):
-        return True, bool(result[1])
+    if result:
+        stored_pass, is_admin, is_active = result
+        if not is_active:
+            return False, False  # User is deactivated
+        if bcrypt.checkpw(password.encode(), stored_pass):
+            return True, bool(is_admin)
     return False, False
 def create_admin_account():
     username = "isaack sani"
@@ -134,6 +145,18 @@ def get_all_users():
     users = c.fetchall()
     conn.close()
     return users
+def set_user_status(username, active):
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("UPDATE users SET is_active = ? WHERE username = ?", (1 if active else 0, username))
+    conn.commit()
+    conn.close()
+def delete_user(username):
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("DELETE FROM users WHERE username = ?", (username,))
+    conn.commit()
+    conn.close()
 def log_activity(username, activity):
     pass
 def log_session(username, session_type):
