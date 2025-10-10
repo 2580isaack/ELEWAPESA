@@ -78,6 +78,37 @@ def check_login(username, password):
     if result and bcrypt.checkpw(password.encode(), result[0]):
         return True, bool(result[1])
     return False, False
+ 
+ def signup_form():
+    st.subheader("Create Account")
+    username = st.text_input("Choose a Username")
+    password = st.text_input("Choose a Password", type="password")
+
+    # Add optional secret admin key input
+    st.markdown("If you're an admin, enter your secure admin access key below:")
+    admin_key_input = st.text_input("Admin Access Key (leave blank if not admin)", type="password")
+
+    # Set your secret admin key here (keep this private!)
+    SECRET_ADMIN_KEY = "ElewaPesa@Secure2025"  # you can change this
+
+    if st.button("Sign Up"):
+        if not username or not password:
+            st.warning("Please fill in all required fields.")
+            return
+
+        # Only assign admin role if correct secret key is provided
+        is_admin = 1 if admin_key_input == SECRET_ADMIN_KEY else 0
+
+        success = add_user(username, password, is_admin)
+        if success:
+            if is_admin:
+                st.success(f"Admin account '{username}' created successfully.")
+            else:
+                st.success(f"User account '{username}' created successfully.")
+        else:
+            st.error("Username already exists. Please choose another.")
+
+
 def log_user_activity(username, activity):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
@@ -228,36 +259,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-def signup_form():
-    st.subheader("Create Account")
-    username = st.text_input("Choose a Username")
-    password = st.text_input("Choose a Password", type="password")
-
-    # Add optional secret admin key input
-    st.markdown("If you're an admin, enter your secure admin access key below:")
-    admin_key_input = st.text_input("Admin Access Key (leave blank if not admin)", type="password")
-
-    # Set your secret admin key here (keep this private!)
-    SECRET_ADMIN_KEY = "ElewaPesa@Secure2025"  # you can change this
-
-    if st.button("Sign Up"):
-        if not username or not password:
-            st.warning("Please fill in all required fields.")
-            return
-
-        # Only assign admin role if correct secret key is provided
-        is_admin = 1 if admin_key_input == SECRET_ADMIN_KEY else 0
-
-        success = add_user(username, password, is_admin)
-        if success:
-            if is_admin:
-                st.success(f"Admin account '{username}' created successfully.")
-            else:
-                st.success(f"User account '{username}' created successfully.")
-        else:
-            st.error("Username already exists. Please choose another.")
-
-
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 if 'username' not in st.session_state:
@@ -277,11 +278,9 @@ if st.session_state.logged_in:
     if page_visibility.get("Mobile money Monitor", True): menu.append("Mobile money Monitor")
     menu.append("Logout")
 
-    if st.session_state.is_admin:
-        menu.append("Admin Dashboard")
-else:
-    menu = ["Login", "Sign Up"]
-
+   if st.session_state.is_admin:
+    menu.append("Admin Dashboard")
+   #else: hide admin link entirely
 nav_default = st.session_state.get("nav_selection")
 if nav_default not in menu:
     nav_default = menu[0]
@@ -359,7 +358,16 @@ elif choice == "Logout":
         st.session_state.nav_selection = "Login"
         st.rerun()
 elif choice == "Admin Dashboard":
-    if st.session_state.is_admin:
+    if not st.session_state.logged_in:
+        st.error("You must log in to access this page.")
+        st.stop()
+    elif not st.session_state.is_admin:
+        st.error("Access denied. Admins only.")
+        st.stop()
+    else:
+        log_activity(st.session_state.username, 'Viewed Admin Dashboard')
+        st.title("Administrator Dashboard")
+        # (rest of your admin content here)
         log_activity(st.session_state.username, 'Viewed Admin Dashboard')
         st.title("Administrator Dashboard")
 
