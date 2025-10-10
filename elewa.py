@@ -808,53 +808,95 @@ elif choice == "Budgeting":
 elif choice == "Literature":
     if st.session_state.logged_in:
         st.title("📘 Financial Literacy Resources")
-        st.image(
-            "https://img.freepik.com/free-photo/finance-economy-concept_53876-127488.jpg",
-            use_container_width=True,
-            caption="Empowering youth with financial knowledge."
+
+        # --- Main Hero Image (Banks, Consumers, Economy) ---
+        st.markdown(
+            """
+            <a href="https://www.worldbank.org/en/topic/financialsector" target="_blank">
+                <img src="https://img.freepik.com/free-photo/business-finance-economy-growth-background_53876-124018.jpg"
+                     style="width:100%; border-radius:15px; margin-bottom:10px;" 
+                     alt="Connecting banks, consumers, and the economy through financial literacy.">
+            </a>
+            """,
+            unsafe_allow_html=True
         )
+
         st.markdown("### 🌍 Explore Featured Learning Materials")
-        # Create 2 columns for visual balance
+
         col1, col2 = st.columns(2)
+
+        # --- Column 1 ---
         with col1:
-            # Budgeting 101
-            st.image("https://img.freepik.com/free-photo/woman-counting-money-budget_23-2148767284.jpg", use_container_width=True)
-            st.markdown("""
-            **[Budgeting 101 – Investopedia](https://www.investopedia.com/terms/b/budget.asp)**  
-            Learn the basics of personal budgeting, how to track spending, and build saving discipline.
-            """)
-            # Understanding SACCOs
-            st.image("https://img.freepik.com/free-photo/group-hands-holding-paper-people-chain_23-2148789417.jpg", use_container_width=True)
-            st.markdown("""
-            **[Understanding SACCOs in Kenya](https://www.profinch.com/sacco/)**  
-            Explore how SACCOs empower communities through cooperative financial services and shared growth.
-            """)
+            # Personal Budgeting
+            st.markdown(
+                """
+                <a href="https://www.investopedia.com/terms/b/budget.asp" target="_blank">
+                    <img src="https://img.freepik.com/free-photo/close-up-person-writing-expense-tracker_23-2149133753.jpg"
+                         style="width:100%; border-radius:12px;">
+                </a>
+                """,
+                unsafe_allow_html=True
+            )
+            st.markdown("**[Budgeting 101 – Investopedia](https://www.investopedia.com/terms/b/budget.asp)**")
+
+            # SACCOs
+            st.markdown(
+                """
+                <a href="https://www.profinch.com/sacco/" target="_blank">
+                    <img src="https://img.freepik.com/free-photo/community-finance-meeting-cooperative-members-discussing-investments_23-2150038492.jpg"
+                         style="width:100%; border-radius:12px;">
+                </a>
+                """,
+                unsafe_allow_html=True
+            )
+            st.markdown("**[Understanding SACCOs in Kenya](https://www.profinch.com/sacco/)**")
+
             # Financial Education for African Youth
-            st.image("https://img.freepik.com/free-photo/african-teacher-explaining-lesson-class_23-2148764991.jpg", use_container_width=True)
-            st.markdown("""
-            **[Financial Education for African Youth – Aflatoun](https://www.aflatoun.org/)**  
-            Discover financial education programs shaping young Africans into financially empowered citizens.
-            """)
+            st.markdown(
+                """
+                <a href="https://www.aflatoun.org/" target="_blank">
+                    <img src="https://img.freepik.com/free-photo/african-teacher-explaining-financial-concepts-classroom_23-2148764991.jpg"
+                         style="width:100%; border-radius:12px;">
+                </a>
+                """,
+                unsafe_allow_html=True
+            )
+            st.markdown("**[Financial Education for African Youth – Aflatoun](https://www.aflatoun.org/)**")
+
+        # --- Column 2 ---
         with col2:
-            # Saving and Investing Tips
-            st.image("https://img.freepik.com/free-photo/coins-plant-growing-money-concept_1150-11424.jpg", use_container_width=True)
-            st.markdown("""
-            **[Saving and Investing Tips – CMA Kenya](https://www.cma.or.ke/)**  
-            Learn smart saving habits and low-risk investment strategies for long-term growth.
-            """)
+            # Saving & Investing
+            st.markdown(
+                """
+                <a href="https://www.cma.or.ke/" target="_blank">
+                    <img src="https://img.freepik.com/free-photo/growth-money-concept-plant-growing-coins-glass-jar_1150-11723.jpg"
+                         style="width:100%; border-radius:12px;">
+                </a>
+                """,
+                unsafe_allow_html=True
+            )
+            st.markdown("**[Saving and Investing Tips – CMA Kenya](https://www.cma.or.ke/)**")
+
             # Money Academy Curriculum
-            st.image("https://img.freepik.com/free-photo/teacher-online-course_23-2148900303.jpg", use_container_width=True)
-            st.markdown("""
-            **[Money Academy – Financial Literacy Curriculum](https://www.fitmoney.org/)**  
-            A structured learning path on money management, saving, and responsible spending.
-            """)
+            st.markdown(
+                """
+                <a href="https://www.fitmoney.org/" target="_blank">
+                    <img src="https://img.freepik.com/free-photo/young-african-student-watching-online-class-laptop_23-2149133721.jpg"
+                         style="width:100%; border-radius:12px;">
+                </a>
+                """,
+                unsafe_allow_html=True
+            )
+            st.markdown("**[Money Academy – Financial Literacy Curriculum](https://www.fitmoney.org/)**")
+
+        # --- Section Footer ---
         st.divider()
         st.markdown("### 💡 Why Financial Literacy Matters")
         st.info("""
-        Financial literacy helps you make informed money decisions, avoid unnecessary debt,
-        and secure your financial future.  
-        In Kenya, SACCOs and financial education programs are key to empowering youth and communities.
+        Financial literacy empowers individuals to manage money wisely, avoid debt traps, and plan for a secure future.  
+        In Kenya, SACCOs, digital banking, and financial education programs are transforming how young people engage with money.
         """)
+
         st.success("💬 Keep exploring — every resource brings you closer to financial confidence!")
 elif choice == "Mobile money Monitor":
     if st.session_state.logged_in:
