@@ -22,27 +22,27 @@ import os
 # %%writefile app.py
 import json
 import csv
+import io
+import base64
+import sqlite3
 from datetime import datetime
 import streamlit as st
 import pandas as pd
 import numpy as np
-import shap
-import base64
-import sqlite3
-import datetime
+import matplotlib.pyplot as plt
+from scipy import stats
+import bcrypt
+# Machine Learning / Stats
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.cluster import KMeans
-from pyngrok import ngrok
-import bcrypt
-import io
-from scipy import stats
+# Time series analysis
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.arima.model import ARIMA
+
 def init_db():
     conn = sqlite3.connect("users.db")
 
