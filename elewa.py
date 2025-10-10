@@ -259,27 +259,40 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-if 'logged_in' not in st.session_state:
+# --- Initialize Session State Variables ---
+if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-if 'username' not in st.session_state:
-    st.session_state.username = ''
-if 'is_admin' not in st.session_state:
+if "username" not in st.session_state:
+    st.session_state.username = ""
+if "is_admin" not in st.session_state:
     st.session_state.is_admin = False
-if 'nav_selection' not in st.session_state:
-    st.session_state.nav_selection = 'Login'
+if "nav_selection" not in st.session_state:
+    st.session_state.nav_selection = "Login"
+
+# --- Determine Page Visibility ---
 page_visibility = get_visible_pages()
+
+# --- Build Navigation Menu ---
 if st.session_state.logged_in:
     menu = []
-    if page_visibility.get("Home", True): menu.append("Home")
-    if page_visibility.get("About", True): menu.append("About")
-    if page_visibility.get("SACCO Interface", True): menu.append("SACCO Interface")
-    if page_visibility.get("Budgeting", True): menu.append("Budgeting")
-    if page_visibility.get("Literature", True): menu.append("Literature")
-    if page_visibility.get("Mobile money Monitor", True): menu.append("Mobile money Monitor")
-    menu.append("Logout")
-if st.session_state.is_admin:
-    menu.append("Admin Dashboard")
-   #else: hide admin link entirely
+
+    if page_visibility.get("Home", True):
+        menu.append("Home")
+    if page_visibility.get("About", True):
+        menu.append("About")
+    if page_visibility.get("SACCO Interface", True):
+        menu.append("SACCO Interface")
+    if page_visibility.get("Budgeting", True):
+        menu.append("Budgeting")
+    if page_visibility.get("Literature", True):
+        menu.append("Literature")
+    if page_visibility.get("Mobile money Monitor", True):
+        menu.append("Mobile money Monitor")
+
+    # Show Admin Dashboard only if user is admin
+    if st.session_state.is_admin:
+        menu.append("Admin Dashboard") #else: hide admin link entirel
+        menu.append("Logout")
 nav_default = st.session_state.get("nav_selection")
 if nav_default not in menu:
     nav_default = menu[0]
