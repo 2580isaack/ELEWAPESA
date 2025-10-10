@@ -813,8 +813,8 @@ elif choice == "Literature":
         st.markdown(
             """
             <a href="https://www.worldbank.org/en/topic/financialsector" target="_blank">
-                <img src="https://img.freepik.com/free-photo/business-finance-economy-growth-background_53876-124018.jpg"
-                     style="width:100%; border-radius:15px; margin-bottom:10px;" 
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm_Ry_eckn4D1LV-Z0BiZO9jtEwIdonQgu9A&s"
+                     style="width:100%; border-radius:15px; margin-bottom:15px;" 
                      alt="Connecting banks, consumers, and the economy through financial literacy.">
             </a>
             """,
@@ -831,32 +831,33 @@ elif choice == "Literature":
             st.markdown(
                 """
                 <a href="https://www.investopedia.com/terms/b/budget.asp" target="_blank">
-                    <img src="https://img.freepik.com/free-photo/close-up-person-writing-expense-tracker_23-2149133753.jpg"
-                         style="width:100%; border-radius:12px;">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd-0dqO4riUBHT1-EWTZrK848vOCjL40ZJiA&s"
+                         style="width:100%; border-radius:12px; margin-bottom:8px;">
                 </a>
                 """,
                 unsafe_allow_html=True
             )
             st.markdown("**[Budgeting 101 – Investopedia](https://www.investopedia.com/terms/b/budget.asp)**")
 
-            # SACCOs
+            # SACCOs in Kenya (customized to include flag imagery)
             st.markdown(
                 """
                 <a href="https://www.profinch.com/sacco/" target="_blank">
-                    <img src="https://img.freepik.com/free-photo/community-finance-meeting-cooperative-members-discussing-investments_23-2150038492.jpg"
-                         style="width:100%; border-radius:12px;">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRG5NSFeiYpN3SFt3s3fQ7O9qSSLeHrHzh4Mg&s"
+                         style="width:100%; border-radius:12px; margin-bottom:8px;"
+                         alt="Understanding SACCOs in Kenya with national perspective.">
                 </a>
                 """,
                 unsafe_allow_html=True
             )
             st.markdown("**[Understanding SACCOs in Kenya](https://www.profinch.com/sacco/)**")
 
-            # Financial Education for African Youth
+            # Financial Education for African Youth – Aflatoun
             st.markdown(
                 """
                 <a href="https://www.aflatoun.org/" target="_blank">
-                    <img src="https://img.freepik.com/free-photo/african-teacher-explaining-financial-concepts-classroom_23-2148764991.jpg"
-                         style="width:100%; border-radius:12px;">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZRMTcNDMHgIzmcyXO6NbnfLgVlh2V9qykIA&s"
+                         style="width:100%; border-radius:12px; margin-bottom:8px;">
                 </a>
                 """,
                 unsafe_allow_html=True
@@ -865,38 +866,36 @@ elif choice == "Literature":
 
         # --- Column 2 ---
         with col2:
-            # Saving & Investing
+            # Saving & Investing – CMA Kenya
             st.markdown(
                 """
                 <a href="https://www.cma.or.ke/" target="_blank">
-                    <img src="https://img.freepik.com/free-photo/growth-money-concept-plant-growing-coins-glass-jar_1150-11723.jpg"
-                         style="width:100%; border-radius:12px;">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ99t1VSKyZHWDA58ImwiurKtK-O8O4JAbLA&s"
+                         style="width:100%; border-radius:12px; margin-bottom:8px;">
                 </a>
                 """,
                 unsafe_allow_html=True
             )
             st.markdown("**[Saving and Investing Tips – CMA Kenya](https://www.cma.or.ke/)**")
 
-            # Money Academy Curriculum
+            # Money Academy
             st.markdown(
                 """
                 <a href="https://www.fitmoney.org/" target="_blank">
-                    <img src="https://img.freepik.com/free-photo/young-african-student-watching-online-class-laptop_23-2149133721.jpg"
-                         style="width:100%; border-radius:12px;">
+                    <img src="https://nitpinc.com/wp-content/uploads/2024/02/Depositphotos_515986870_S.jpg"
+                         style="width:100%; border-radius:12px; margin-bottom:8px;">
                 </a>
                 """,
                 unsafe_allow_html=True
             )
             st.markdown("**[Money Academy – Financial Literacy Curriculum](https://www.fitmoney.org/)**")
 
-        # --- Section Footer ---
         st.divider()
         st.markdown("### 💡 Why Financial Literacy Matters")
         st.info("""
         Financial literacy empowers individuals to manage money wisely, avoid debt traps, and plan for a secure future.  
         In Kenya, SACCOs, digital banking, and financial education programs are transforming how young people engage with money.
         """)
-
         st.success("💬 Keep exploring — every resource brings you closer to financial confidence!")
 elif choice == "Mobile money Monitor":
     if st.session_state.logged_in:
