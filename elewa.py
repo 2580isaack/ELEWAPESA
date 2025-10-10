@@ -109,7 +109,7 @@ def create_admin_account():
     except sqlite3.IntegrityError:
         print("Admin account already exists.")
     conn.close()
- create_admin_account() 
+    create_admin_account() 
 # Run only once manually:
     
 def signup_form():
