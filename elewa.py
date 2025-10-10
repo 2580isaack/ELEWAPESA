@@ -69,9 +69,18 @@ def add_user(username, password, is_admin=0):
     except sqlite3.IntegrityError:
         conn.close()
         return False
+def check_login(username, password):
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("SELECT password, is_admin FROM users WHERE username = ?", (username,))
+    result = c.fetchone()
+    conn.close()
+    if result and bcrypt.checkpw(password.encode(), result[0]):
+        return True, bool(result[1])
+    return False, False
 def create_admin_account():
-    username = "admin"
-    password = "YourStrongAdminPass123!"
+    username = "isaack sani"
+    password = "imisaack2000"
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
     hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
@@ -83,17 +92,7 @@ def create_admin_account():
         print("Admin account already exists.")
     conn.close()
 # Run only once manually:
-# create_admin_account()
-def check_login(username, password):
-    conn = sqlite3.connect("users.db")
-    c = conn.cursor()
-    c.execute("SELECT password, is_admin FROM users WHERE username = ?", (username,))
-    result = c.fetchone()
-    conn.close()
-    if result and bcrypt.checkpw(password.encode(), result[0]):
-        return True, bool(result[1])
-    return False, False
- 
+# create_admin_account() 
 def signup_form():
     st.subheader("Create Account")
     username = st.text_input("Choose a Username")
