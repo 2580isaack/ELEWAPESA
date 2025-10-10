@@ -293,6 +293,9 @@ if st.session_state.logged_in:
     if st.session_state.is_admin:
         menu.append("Admin Dashboard") #else: hide admin link entirel
         menu.append("Logout")
+     
+else:
+    menu = ["Login", "Register", "About"]
 nav_default = st.session_state.get("nav_selection")
 nav_default = st.session_state.get("nav_selection", "Login")
 if nav_default not in menu:
