@@ -40,7 +40,7 @@ def init_db():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
     c.execute('''
-        CREATE TABLE IF NOT EXISTS users (
+         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
             password BLOB NOT NULL,
             is_admin INTEGER DEFAULT 0,
@@ -149,7 +149,7 @@ def get_activity_logs():
 def get_all_users():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
-    c.execute("SELECT username, is_admin FROM users")
+    c.execute("SELECT username, is_admin, is_active FROM users")
     users = c.fetchall()
     conn.close()
     return users
