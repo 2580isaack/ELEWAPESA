@@ -343,25 +343,38 @@ if choice == "Login":
                 st.rerun()
             else:
                 st.error("Invalid admin login details")
-
-elif choice == "Sign Up":
-    st.title("Sign Up")
-    new_user = st.text_input("Create Username")
-    new_pass = st.text_input("Create Password", type='password')
-
-    signup_type = st.radio("Sign up as:", ("User", "Admin"))
-
-    if st.button("Sign Up"):
-        if new_user and new_pass:
-            is_admin_value = 1 if signup_type == "Admin" else 0
-            if add_user(new_user, new_pass, is_admin=is_admin_value):
-                st.success(f"{signup_type} account created! You can now log in.")
-                log_user_activity(new_user, f"Signed up as {signup_type}")
+elif choice == "Register":
+    st.title("Create Your ElewaPesa Account")
+    with st.form("registration_form"):
+        username = st.text_input("Choose a Username")
+        password = st.text_input("Create Password", type="password")
+        confirm_password = st.text_input("Confirm Password", type="password")
+        submit = st.form_submit_button("Register")
+        if submit:
+            if not username or not password:
+                st.warning("Please fill in all fields.")
+            elif password != confirm_password:
+                st.error("Passwords do not match.")
             else:
-                st.error("Username already exists. Please choose another.")
-        else:
-            st.error("Please fill in all fields.")
-
+                conn = sqlite3.connect("users.db")
+                c = conn.cursor()
+                c.execute("SELECT * FROM users WHERE username = ?", (username,))
+                existing_user = c.fetchone()
+                if existing_user:
+                    st.error("That username already exists. Try another one.")
+                else:
+                    hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+                    c.execute(
+                        "INSERT INTO users (username, password, is_admin) VALUES (?, ?, ?)",
+                        (username, hashed_pass, 0),
+                    )
+                    conn.commit()
+                    conn.close()
+                    st.success("Registration successful! You can now log in.")
+                    log_user_activity(username, "Registered as User")
+                    st.session_state.logged_in = False
+                    st.session_state.username = username
+                    st.session_state.is_admin = False
 elif choice == "Logout":
     if st.session_state.logged_in:
         log_session(st.session_state.username, 'logout')
