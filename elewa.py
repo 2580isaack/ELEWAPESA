@@ -79,7 +79,7 @@ def check_login(username, password):
         return True, bool(result[1])
     return False, False
  
- def signup_form():
+def signup_form():
     st.subheader("Create Account")
     username = st.text_input("Choose a Username")
     password = st.text_input("Choose a Password", type="password")
