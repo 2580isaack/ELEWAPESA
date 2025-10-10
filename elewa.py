@@ -807,23 +807,63 @@ elif choice == "Budgeting":
             st.info("Please enter your monthly income to access the budgeting tools.")
 elif choice == "Literature":
     if st.session_state.logged_in:
-        st.title("Financial Literacy Resources")
-        st.image("https://www.investopedia.com/thmb/BFmdJbKhStQQ2pby0Tw0Gp-3HiM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-1354286504-71e832b51e8d47a4baccb5e0bcfa0cb4.jpg", use_container_width=True)
+        st.title("📚 Financial Literacy Resources")
 
-        st.markdown("""
-            ### Recommended Reads
-            - [Budgeting 101 - Investopedia](https://www.investopedia.com/terms/b/budget.asp)
-            - [Understanding SACCOs in Kenya](https://www.profinch.com/sacco/)
-            - [Saving and Investing Tips - Capital Markets Authority Kenya](https://www.cma.or.ke/)
-            - [Money Academy – Financial Literacy Curriculum](https://www.fitmoney.org/)
-            - [Financial Education for African Youth](https://www.aflatoun.org/)
-        """)
-        st.markdown("#### Why Financial Literacy Matters")
+        # Featured banner image
+        st.image(
+            "https://www.investopedia.com/thmb/BFmdJbKhStQQ2pby0Tw0Gp-3HiM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-1354286504-71e832b51e8d47a4baccb5e0bcfa0cb4.jpg",
+            use_container_width=True,
+            caption="Empowering you with financial wisdom."
+        )
+
+        st.markdown("### 🌍 Explore Top Financial Literacy Reads")
+        
+        # Create columns for beautiful layout
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.image("https://cdn-icons-png.flaticon.com/512/2329/2329126.png", width=100)
+            st.markdown("""
+            **[Budgeting 101 - Investopedia](https://www.investopedia.com/terms/b/budget.asp)**  
+            Learn how to manage your money smartly and build a personal budget that works.
+            """)
+
+            st.image("https://cdn-icons-png.flaticon.com/512/3534/3534073.png", width=100)
+            st.markdown("""
+            **[Understanding SACCOs in Kenya](https://www.profinch.com/sacco/)**  
+            Discover how SACCOs empower communities through cooperative financial systems.
+            """)
+
+        with col2:
+            st.image("https://cdn-icons-png.flaticon.com/512/684/684908.png", width=100)
+            st.markdown("""
+            **[Saving and Investing Tips - CMA Kenya](https://www.cma.or.ke/)**  
+            Guidance on making safe investments and growing your savings in Kenya.
+            """)
+
+            st.image("https://cdn-icons-png.flaticon.com/512/3565/3565909.png", width=100)
+            st.markdown("""
+            **[Money Academy – Financial Literacy Curriculum](https://www.fitmoney.org/)**  
+            Build your foundation in budgeting, saving, and investment strategies.
+            """)
+
+            st.image("https://cdn-icons-png.flaticon.com/512/3474/3474362.png", width=100)
+            st.markdown("""
+            **[Financial Education for African Youth](https://www.aflatoun.org/)**  
+            Explore youth-focused financial literacy programs shaping Africa’s future.
+            """)
+
+        st.divider()
+
+        st.markdown("### 💡 Why Financial Literacy Matters")
         st.info("""
-        Financial literacy enables individuals to make informed financial decisions, avoid debt traps, and plan for their future.
-        In Kenya, SACCOs have become pivotal in improving access to financial services, and understanding their structure
-        and offerings is vital for inclusive growth.
+        Financial literacy empowers individuals to make smart money decisions, 
+        avoid debt traps, and secure their future.  
+        In Kenya, SACCOs and digital finance play a vital role in promoting inclusive growth.  
+        Understanding them builds a stronger financial foundation for youth and communities.
         """)
+
+        st.success("💬 Keep learning — your financial journey starts here!")
 elif choice == "Mobile money Monitor":
     if st.session_state.logged_in:
         st.title("Real-time Mobile money Monitoring")
