@@ -63,30 +63,26 @@ def init_db():
     conn.commit()
     conn.close()
 init_db()
-# --- TEMPORARY ADMIN CREATION (run only once) ---
-try:
-    add_user("isaacksani", "imisaack123", is_admin=1)
-    print("✅ Default admin account created successfully.")
-except Exception as e:
-    print(f"⚠️ Admin creation skipped or failed: {e}")
-# --- REMOVE OR COMMENT THIS AFTER SUCCESSFUL RUN ---
 def add_user(username, password, is_admin=0):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
-
-    # Check if user already exists
     c.execute("SELECT username FROM users WHERE username = ?", (username,))
     if c.fetchone():
         conn.close()
         return False
-
-    # Hash password before storing
     hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
     c.execute("INSERT INTO users (username, password, is_admin) VALUES (?, ?, ?)",
               (username, hashed, is_admin))
     conn.commit()
     conn.close()
     return True
+ # --- TEMPORARY ADMIN CREATION (run only once) ---
+try:
+    add_user("isaacksani", "imisaack123", is_admin=1)
+    print("✅ Default admin account created successfully.")
+except Exception as e:
+    print(f"⚠️ Admin creation skipped or failed: {e}")
+# --- REMOVE OR COMMENT THIS AFTER SUCCESSFUL RUN ---
 def check_login(username, password):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
@@ -113,8 +109,9 @@ def create_admin_account():
     except sqlite3.IntegrityError:
         print("Admin account already exists.")
     conn.close()
+ create_admin_account() 
 # Run only once manually:
-# create_admin_account() 
+    
 def signup_form():
     st.subheader("Create Account")
     username = st.text_input("Choose a Username")
@@ -439,13 +436,13 @@ elif choice == "Admin Dashboard":
         c1, c2 = st.columns(2)
         with c1:
             if st.button(f"Deactivate {selected_user}"):
-                set_user_active_status(selected_user, 0)
+                set_user_status(selected_user, 0)
                 st.success(f"User '{selected_user}' deactivated.")
                 log_user_activity(st.session_state.username, f"Deactivated user {selected_user}")
                 st.rerun()
         with c2:
             if st.button(f"Activate {selected_user}"):
-                set_user_active_status(selected_user, 1)
+                set_user_status(selected_user, 1)
                 st.success(f"User '{selected_user}' activated.")
                 log_user_activity(st.session_state.username, f"Activated user {selected_user}")
                 st.rerun()
