@@ -36,9 +36,6 @@ import io
 from scipy import stats
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.arima.model import ARIMA
-import sqlite3
-def get_connection():
-    return sqlite3.connect("users.db")
 def init_db():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
@@ -46,7 +43,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
             password BLOB NOT NULL,
-            is_admin INTEGER DEFAULT 0
+            is_admin INTEGER DEFAULT 0,
+            is_active INTEGER DEFAULT 1
         )
     ''')
     c.execute('''
@@ -57,13 +55,11 @@ def init_db():
         )
     ''')
     c.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        username TEXT PRIMARY KEY,
-        password BLOB NOT NULL,
-        is_admin INTEGER DEFAULT 0,
-        is_active INTEGER DEFAULT 1
+        CREATE TABLE IF NOT EXISTS active_sessions (
+            username TEXT PRIMARY KEY,
+            login_time TEXT
         )
-        ''')
+    ''')
     conn.commit()
     conn.close()
 init_db()
@@ -406,82 +402,82 @@ elif choice == "Logout":
 elif choice == "Admin Dashboard":
     if not st.session_state.logged_in:
         st.error("You must log in to access this page.")
+        st.session_state.nav_selection = "Login"
         st.stop()
-    elif not st.session_state.is_admin:
+    if not st.session_state.is_admin:
         st.error("Access denied. Admins only.")
+        st.session_state.nav_selection = "Login"
         st.stop()
+    log_activity(st.session_state.username, 'Viewed Admin Dashboard')
+    st.title("Administrator Dashboard")
+    st.markdown("Welcome, Admin 👑")
+    st.markdown("### 👥 Registered Users")
+    users = get_all_users()
+    if users:
+        user_df = pd.DataFrame(users, columns=["Username", "Is Admin", "Is Active"])
+        user_df["Is Admin"] = user_df["Is Admin"].apply(lambda x: "Yes" if x else "No")
+        user_df["Is Active"] = user_df["Is Active"].apply(lambda x: "Active" if x else "Deactivated")
+        st.dataframe(user_df, use_container_width=True)
     else:
-        log_activity(st.session_state.username, 'Viewed Admin Dashboard')
-        st.title("Administrator Dashboard")
-        # (rest of your admin content here)
-        log_activity(st.session_state.username, 'Viewed Admin Dashboard')
-        st.title("Administrator Dashboard")
+        st.info("No users registered yet.")
+    st.markdown("### 🔐 Manage User Status")
+    all_users = [user[0] for user in users] if users else []
+    selected_user = st.selectbox("Select user to manage status:", ["-- Select User --"] + all_users)
 
-        st.markdown("### Registered Users")
-        users = get_all_users()
-        if users:
-            user_df = pd.DataFrame(users, columns=["Username", "Is Admin"])
-            user_df['Is Admin'] = user_df['Is Admin'].apply(lambda x: 'Yes' if x else 'No')
-            st.dataframe(user_df)
-        else:
-            st.info("No users registered yet.")
-        st.markdown("### User Activity Logs")
-        logs = get_activity_logs()
-        if logs:
-            log_df = pd.DataFrame(logs, columns=["Username", "Timestamp", "Activity"])
-            st.dataframe(log_df)
-        else:
-            st.info("No user activity logs found.")
-        st.markdown("### Manage User Content (Placeholder)")
-        st.warning("This is a placeholder. Implementing full content management requires a more robust database structure and UI.")
-        all_users = [user[0] for user in get_all_users()]
-        selected_user_for_content = st.selectbox("Select a user to manage content for:", ["-- Select User --"] + all_users)
-        if selected_user_for_content != "-- Select User --":
-            user_current_content = get_user_content(selected_user_for_content)
-            st.write(f"Current content for {selected_user_for_content}:")
-            st.json(user_current_content)
-            new_content_json = st.text_area("Enter new content (JSON format):", json.dumps(user_current_content, indent=2))
-            if st.button(f"Update content for {selected_user_for_content}"):
-                try:
-                    updated_content = json.loads(new_content_json)
-                    update_user_content(selected_user_for_content, updated_content)
-                    st.success(f"Content updated for {selected_user_for_content}.")
-                    log_user_activity(st.session_state.username, f"Updated content for {selected_user_for_content}")
-                    st.rerun()
-                except json.JSONDecodeError:
-                    st.error("Invalid JSON format. Please check your input.")
-
-            if st.button(f"Clear all content for {selected_user_for_content}"):
-                 update_user_content(selected_user_for_content, {})
-                 st.success(f"All content cleared for {selected_user_for_content}.")
-                 log_user_activity(st.session_state.username, f"Cleared content for {selected_user_for_content}")
-                 st.rerun()
-        st.markdown("### Manage Page Visibility")
-        current_visibility = get_visible_pages()
-        st.write("Control which pages are visible to non-admin users.")
-        for page, is_visible in current_visibility.items():
-            new_visibility = st.checkbox(f"Show '{page}' page", value=is_visible, key=f"visibility_{page}")
-            if new_visibility != is_visible:
-                set_page_visibility(page, new_visibility)
-                st.info(f"Visibility of '{page}' page updated. Changes will be reflected on the next page load.")
-                log_user_activity(st.session_state.username, f"Set visibility of '{page}' to {new_visibility}")
+    if selected_user != "-- Select User --":
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button(f"Deactivate {selected_user}"):
+                set_user_active_status(selected_user, 0)
+                st.success(f"User '{selected_user}' deactivated.")
+                log_user_activity(st.session_state.username, f"Deactivated user {selected_user}")
                 st.rerun()
-        st.markdown("### Add New Admin User")
-        new_admin_user = st.text_input("New Admin Username")
-        new_admin_pass = st.text_input("New Admin Password", type='password')
-        if st.button("Add Admin"):
-            if new_admin_user and new_admin_pass:
-                if add_user(new_admin_user, new_admin_pass, is_admin=1):
-                    st.success(f"Admin user '{new_admin_user}' added.")
-                    log_user_activity(st.session_state.username, f"Added new admin user: {new_admin_user}")
-                else:
-                    st.error("Username already exists.")
+        with c2:
+            if st.button(f"Activate {selected_user}"):
+                set_user_active_status(selected_user, 1)
+                st.success(f"User '{selected_user}' activated.")
+                log_user_activity(st.session_state.username, f"Activated user {selected_user}")
+                st.rerun()
+    st.markdown("### 📜 User Activity Logs")
+    logs = get_activity_logs()
+    if logs:
+        log_df = pd.DataFrame(logs, columns=["Username", "Timestamp", "Activity"])
+        st.dataframe(log_df, use_container_width=True)
+    else:
+        st.info("No user activity logs found.")
+    st.markdown("### 🌍 Manage Page Visibility")
+    current_visibility = get_visible_pages()
+    st.write("Control which pages are visible to non-admin users.")
+    for page, is_visible in current_visibility.items():
+        new_visibility = st.checkbox(f"Show '{page}' page", value=is_visible, key=f"visibility_{page}")
+        if new_visibility != is_visible:
+            set_page_visibility(page, new_visibility)
+            st.info(f"Visibility of '{page}' page updated. Changes will appear on next load.")
+            log_user_activity(st.session_state.username, f"Set visibility of '{page}' to {new_visibility}")
+            st.rerun()
+    st.markdown("### 🧑‍💼 Add New Admin User")
+    new_admin_user = st.text_input("New Admin Username")
+    new_admin_pass = st.text_input("New Admin Password", type='password')
+    if st.button("Add Admin"):
+        if new_admin_user and new_admin_pass:
+            if add_user(new_admin_user, new_admin_pass, is_admin=1):
+                st.success(f"Admin user '{new_admin_user}' added successfully.")
+                log_user_activity(st.session_state.username, f"Added new admin user: {new_admin_user}")
+                st.rerun()
             else:
-                st.error("Please fill in all fields.")
+                st.error("Username already exists. Try another.")
         else:
-         st.warning("You do not have permission to access this page.")
-         st.session_state.nav_selection = "Login"
-         st.rerun()
+            st.warning("Please fill in all fields before adding.")
+    st.markdown("---")
+    if st.button("🚪 Logout"):
+        log_session(st.session_state.username, 'logout')
+        log_user_activity(st.session_state.username, "Logged out from Admin Dashboard")
+        st.session_state.logged_in = False
+        st.session_state.username = ''
+        st.session_state.is_admin = False
+        st.session_state.nav_selection = "Login"
+        st.success("You have been logged out successfully.")
+        st.rerun()
 elif choice == "Home":
     if page_visibility.get("Home", True) or st.session_state.is_admin:
         if st.session_state.logged_in:
