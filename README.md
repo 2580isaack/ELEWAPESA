@@ -11,9 +11,9 @@ The project simulates real-life financial data to analyze saving habits, income 
 - Simulated financial data for youth aged 18–35.  
 - Insights on saving frequency, income level, spending patterns, and budgeting.  
 - Predictive modeling for savings behavior using regression and classification techniques.  
-- User-friendly interface accessible through **ngrok** and **Streamlit Cloud**.  
+- User-friendly interface accessible through **Streamlit Cloud**.  
 
 - **Language:** Python  
 - **Libraries:** Streamlit, Pandas, NumPy, Matplotlib, Scikit-learn  
 - **Environment:** Google Colab  
-- **Deployment:** ngrok / Streamlit Cloud  
+- **Deployment:** Streamlit Cloud  
