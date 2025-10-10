@@ -1,4 +1,4 @@
-bcrypt
+py-bcrypt
 streamlit
 pandas
 numpy
