@@ -438,8 +438,7 @@ elif choice == "Admin Dashboard":
                     st.error("Username already exists.")
             else:
                 st.error("Please fill in all fields.")
-
-    else:
+        else:
         st.warning("You do not have permission to access this page.")
         st.session_state.nav_selection = "Login"
         st.rerun()
