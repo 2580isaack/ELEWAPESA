@@ -15,6 +15,13 @@ Original file is located at
 #Original file is located at
  #   https://colab.research.google.com/drive/1bm0qIT3CCjQs0RkuXiHA-dxiRdfLXhqf
 #"""
+import streamlit as st
+try:
+    import bcrypt
+    st.success("bcrypt imported successfully")
+except Exception as e:
+    st.error(f"bcrypt import failed: {e}")
+
 import bcrypt
 # Commented out IPython magic to ensure Python compatibility.
 import streamlit as st
