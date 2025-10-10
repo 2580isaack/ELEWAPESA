@@ -1,9 +1,8 @@
 streamlit
-pyngrok
 pandas
 numpy
-seaborn
-shap
-plotly
-scikit-learn
 matplotlib
+scikit-learn
+scipy
+statsmodels
+bcrypt
