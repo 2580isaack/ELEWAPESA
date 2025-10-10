@@ -63,18 +63,30 @@ def init_db():
     conn.commit()
     conn.close()
 init_db()
+# --- TEMPORARY ADMIN CREATION (run only once) ---
+try:
+    add_user("admin", "admin123", is_admin=1)
+    print("✅ Default admin account created successfully.")
+except Exception as e:
+    print(f"⚠️ Admin creation skipped or failed: {e}")
+# --- REMOVE OR COMMENT THIS AFTER SUCCESSFUL RUN ---
 def add_user(username, password, is_admin=0):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
-    hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-    try:
-        c.execute("INSERT INTO users (username, password, is_admin) VALUES (?, ?, ?)", (username, hashed_pass, is_admin))
-        conn.commit()
-        conn.close()
-        return True
-    except sqlite3.IntegrityError:
+
+    # Check if user already exists
+    c.execute("SELECT username FROM users WHERE username = ?", (username,))
+    if c.fetchone():
         conn.close()
         return False
+
+    # Hash password before storing
+    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    c.execute("INSERT INTO users (username, password, is_admin) VALUES (?, ?, ?)",
+              (username, hashed, is_admin))
+    conn.commit()
+    conn.close()
+    return True
 def check_login(username, password):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
@@ -340,23 +352,22 @@ if choice == "Login":
                     st.rerun()
             else:
                 st.error("Invalid user login details")
-        elif login_type == "Admin":
-            conn = sqlite3.connect("users.db")
-            c = conn.cursor()
-            c.execute("SELECT password FROM users WHERE username = ? AND is_admin = 1", (username,))
-            result = c.fetchone()
-            conn.close()
-            if result and bcrypt.checkpw(password.encode(), result[0]):
-                st.session_state.logged_in = True
-                st.session_state.username = username
-                st.session_state.is_admin = True
-                log_user_activity(username, "Logged in as Admin")
-                st.success("Welcome Admin!")
-                log_activity(st.session_state.username, 'Viewed Dashboard')
-                st.session_state.nav_selection = "Admin Dashboard"
-                st.rerun()
-            else:
-                st.error("Invalid admin login details")
+       elif login_type == "Admin":
+        conn = sqlite3.connect("users.db")
+        c = conn.cursor()
+        c.execute("SELECT password FROM users WHERE username = ? AND is_admin = 1", (username,))
+        result = c.fetchone()
+        conn.close()
+        if result and bcrypt.checkpw(password.encode(), result[0]):
+         st.session_state.logged_in = True
+         st.session_state.username = username
+         st.session_state.is_admin = True
+         log_user_activity(username, "Logged in as Admin")
+         st.success("Welcome Admin!")
+         st.session_state.nav_selection = "Admin Dashboard"
+         st.rerun()
+        else:
+         st.error("Invalid admin login details.")
 elif choice == "Register":
     st.title("Create Your ElewaPesa Account")
     with st.form("registration_form"):
