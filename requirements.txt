@@ -1,8 +1,10 @@
-py-bcrypt
 streamlit
 pandas
 numpy
 matplotlib
+seaborn
+plotly
+shap
 scikit-learn
 scipy
 statsmodels
