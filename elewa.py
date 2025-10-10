@@ -36,16 +36,14 @@ import io
 from scipy import stats
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.arima.model import ARIMA
-
 def init_db():
     conn = sqlite3.connect("users.db")
-
     c = conn.cursor()
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
             password BLOB NOT NULL,
-            is_admin INTEGER DEFAULT 0 -- Added is_admin column
+            is_admin INTEGER DEFAULT 0
         )
     ''')
     c.execute('''
@@ -57,6 +55,7 @@ def init_db():
     ''')
     conn.commit()
     conn.close()
+
 init_db()
 def add_user(username, password, is_admin=0):
     conn = sqlite3.connect("users.db")
@@ -228,6 +227,37 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+
+def signup_form():
+    st.subheader("Create Account")
+    username = st.text_input("Choose a Username")
+    password = st.text_input("Choose a Password", type="password")
+
+    # Add optional secret admin key input
+    st.markdown("If you're an admin, enter your secure admin access key below:")
+    admin_key_input = st.text_input("Admin Access Key (leave blank if not admin)", type="password")
+
+    # Set your secret admin key here (keep this private!)
+    SECRET_ADMIN_KEY = "ElewaPesa@Secure2025"  # you can change this
+
+    if st.button("Sign Up"):
+        if not username or not password:
+            st.warning("Please fill in all required fields.")
+            return
+
+        # Only assign admin role if correct secret key is provided
+        is_admin = 1 if admin_key_input == SECRET_ADMIN_KEY else 0
+
+        success = add_user(username, password, is_admin)
+        if success:
+            if is_admin:
+                st.success(f"Admin account '{username}' created successfully.")
+            else:
+                st.success(f"User account '{username}' created successfully.")
+        else:
+            st.error("Username already exists. Please choose another.")
+
+
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 if 'username' not in st.session_state:
