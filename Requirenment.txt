@@ -2,7 +2,6 @@ streamlit
 pyngrok
 pandas
 numpy
-matplotlib
 seaborn
 shap
 plotly
