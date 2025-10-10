@@ -743,7 +743,7 @@ elif choice == "Budgeting":
             st.info("Please enter your monthly income to access the budgeting tools.")
 elif choice == "Literature":
     if st.session_state.logged_in:
-        st.title("📘 Financial Literacy Resources")
+        st.title(" Financial Literacy Resources")
 
         # --- Main Hero Image (Banks, Consumers, Economy) ---
         st.markdown(
@@ -756,7 +756,7 @@ elif choice == "Literature":
             """,
             unsafe_allow_html=True
         )
-        st.markdown("### 🌍 Explore Featured Learning Materials")
+        st.markdown("### Explore Featured Learning Materials")
         col1, col2 = st.columns(2)
         with col1:
             # Personal Budgeting
@@ -821,16 +821,16 @@ elif choice == "Literature":
             st.markdown("**[Money Academy – Financial Literacy Curriculum](https://www.fitmoney.org/)**")
 
         st.divider()
-        st.markdown("### 💡 Why Financial Literacy Matters")
+        st.markdown("### Why Financial Literacy Matters")
         st.info("""
         Financial literacy empowers individuals to manage money wisely, avoid debt traps, and plan for a secure future.  
         In Kenya, SACCOs, digital banking, and financial education programs are transforming how young people engage with money.
         """)
-        st.success("💬 Keep exploring — every resource brings you closer to financial confidence!")
+        st.success("Keep exploring — every resource brings you closer to financial confidence!")
 elif choice == "Mobile money Monitor":
     if st.session_state.logged_in:
         st.title("Real-time Mobile money Monitoring")
         st.markdown("Integration in progress... Live API connectivity will display here once credentials are set.")
 st.set_page_config(page_title="ElewaPesa Dashboard", layout="wide")
-st.title("💸 ElewaPesa – Smart Financial Literacy Dashboard")
+st.title("ElewaPesa – Smart Financial Literacy Dashboard")
 st.write("Welcome to the ElewaPesa dashboard! Analyze youth financial behaviors and trends.")
