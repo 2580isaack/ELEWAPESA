@@ -38,8 +38,6 @@ from statsmodels.tsa.arima.model import ARIMA
 def init_db():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
-
-    # ✅ Main users table (expanded to include all profile info)
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
@@ -176,7 +174,7 @@ def set_user_status(username, active):
     conn.close()
 # ---- PROFILE PAGE ----
 def profile_page(username):
-    st.title("👤 Personal Profile")
+    st.title("Personal Profile")
     st.caption("Manage your personal information, profile picture, and account security.")
     user_data_file = "user_data.csv"
     profile_pic_dir = "profile_pics"
@@ -214,7 +212,7 @@ def profile_page(username):
             st.image("https://cdn-icons-png.flaticon.com/512/847/847969.png",
                      width=150, caption="Default Profile")
     with col2:
-        st.subheader("📝 Update Personal Info")
+        st.subheader("Update Personal Info")
         with st.form("update_profile_form"):
             new_name = st.text_input("Full Name", value=full_name)
             new_email = st.text_input("Email", value=email)
@@ -222,7 +220,7 @@ def profile_page(username):
             new_gender = st.selectbox("Gender", ["", "Male", "Female", "Other"],
                                       index=["", "Male", "Female", "Other"].index(gender) if gender in ["Male", "Female", "Other"] else 0)
             new_location = st.text_input("Location", value=location)
-            st.markdown("### 🎂 Date of Birth")
+            st.markdown("###Date of Birth")
             current_year = datetime.date.today().year
             year = st.selectbox("Year", list(range(1950, current_year + 1)),
                                 index=list(range(1950, current_year + 1)).index(int(year_of_birth))
@@ -234,7 +232,7 @@ def profile_page(username):
             age = current_year - int(year)
             st.write(f"**Calculated Age:** {age} years")
             new_pic = st.file_uploader("Upload Profile Picture", type=["jpg", "jpeg", "png"])
-            save_btn = st.form_submit_button("💾 Save Changes")
+            save_btn = st.form_submit_button("Save Changes")
             if save_btn:
                 if new_pic:
                     pic_path = os.path.join(profile_pic_dir, f"{username}.jpg")
@@ -267,13 +265,13 @@ def profile_page(username):
                     user_df = pd.concat([user_df, new_row], ignore_index=True)
 
                 user_df.to_csv(user_data_file, index=False)
-                st.success("✅ Profile information updated successfully!")
+                st.success("Profile information updated successfully!")
                 try:
                     log_user_activity(username, "Updated personal information")
                 except:
                     pass
     st.divider()
-    with st.expander("🔒 Change Password"):
+    with st.expander("Change Password"):
         st.markdown("### Update Your Password")
         with st.form("change_password_form"):
             old_pass = st.text_input("Old Password", type="password")
@@ -291,7 +289,7 @@ def profile_page(username):
                             bcrypt.gensalt()).decode("utf-8")
                             user_df.loc[user_df["Username"] == username, "Password"] = new_hash
                             user_df.to_csv(user_data_file, index=False)
-                            st.success("✅ Password updated successfully!")
+                            st.success("Password updated successfully!")
                             try:
                                 log_user_activity(username, "Changed password")
                             except:
