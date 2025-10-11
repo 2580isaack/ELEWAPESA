@@ -329,14 +329,14 @@ if choice == "Login":
                     st.success(f"Welcome back, {username}! Redirecting to Home...")
                     st.session_state.nav_selection = "Home"
                     st.rerun()
-            else:
-                st.error("Invalid user login details")
-          elif login_type == "Admin":
-           conn = sqlite3.connect("users.db")
-           c = conn.cursor()
-           c.execute("SELECT password FROM users WHERE username = ? AND is_admin = 1", (username,))
-           result = c.fetchone()
-           conn.close()
+																else:
+																	st.error("Invalid user login details")
+												elif login_type == "Admin":
+													conn = sqlite3.connect("users.db")
+           		c = conn.cursor()
+           		c.execute("SELECT password FROM users WHERE username = ? AND is_admin = 1", (username,))
+		           result = c.fetchone()
+          		 conn.close()
            if result and bcrypt.checkpw(password.encode(), result[0]):
             st.session_state.logged_in = True
             st.session_state.username = username
