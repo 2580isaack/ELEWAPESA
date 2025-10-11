@@ -8,5 +8,5 @@ shap
 scikit-learn
 scipy
 statsmodels
-passlib
 bcrypt
+passlib
