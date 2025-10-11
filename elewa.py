@@ -382,7 +382,7 @@ if choice == "Login":
                              else:
                                 if reset_password(reset_username, new_pass):
                                  st.success("✅ Password reset successfully. You can now log in.")
-                                   st.session_state.show_reset_form = False
+                                 st.session_state.show_reset_form = False
                                 else:
                                   st.error("❌ Username not found.")
                                   st.session_state.nav_selection = "Home"
