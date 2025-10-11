@@ -365,8 +365,8 @@ if choice == "Login":
                     st.session_state.is_admin = is_admin
                     log_user_activity(username, "Logged in as User")
                     st.success(f"Welcome back, {username}! Redirecting to Home...")
-                 st.markdown("---")
-             st.write("Forgot your password?")
+                    st.markdown("---")
+                    st.write("Forgot your password?")
          if st.button("🔑 Forgot Password?"):
                 st.session_state.show_reset_form = True
           if st.session_state.get("show_reset_form", False):
