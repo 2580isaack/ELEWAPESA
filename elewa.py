@@ -241,7 +241,7 @@ def profile_page(username):
     st.divider()
     # Change password section
     with st.expander("Change Password"):
-    st.subheader("Update Your Password")
+       st.subheader("Update Your Password")
     with st.form("change_password_form"):
         old_pass = st.text_input("Old Password", type="password")
         new_pass = st.text_input("New Password", type="password")
