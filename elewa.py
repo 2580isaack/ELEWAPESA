@@ -65,8 +65,7 @@ def init_db():
 init_db()
 def add_user(username, password, is_admin=0):
     conn = sqlite3.connect("users.db")
-    c = conn.cursor()
-    c.execute("SELECT username FROM users WHERE username = ?", (username,))
+   c.execute("SELECT username FROM users WHERE username = ?", (username,))
     if c.fetchone():
         conn.close()
         return False
@@ -77,12 +76,12 @@ def add_user(username, password, is_admin=0):
     conn.close()
     return True
  # --- TEMPORARY ADMIN CREATION (run only once) ---
-try:
-    add_user("isaacksani", "imisaack123", is_admin=1)
-    print("✅ Default admin account created successfully.")
-except Exception as e:
-    print(f"⚠️ Admin creation skipped or failed: {e}")
-# --- REMOVE OR COMMENT THIS AFTER SUCCESSFUL RUN ---
+#try:
+#    add_user("isaacksani", "imisaack123", is_admin=1)
+#    print("✅ Default admin account created successfully.")
+#except Exception as e:
+  #  print(f"⚠️ Admin creation skipped or failed: {e}")
+## --- REMOVE OR COMMENT THIS AFTER SUCCESSFUL RUN ---
 def check_login(username, password):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
@@ -96,21 +95,6 @@ def check_login(username, password):
         if bcrypt.checkpw(password.encode(), stored_pass):
             return True, bool(is_admin)
     return False, False
-#def create_admin_account():
-  #  username = "isaack sani"
-  #  password = "imisaack2000"
-   # conn = sqlite3.connect("users.db")
-  #  c = conn.cursor()
-#    hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-  #  try:
-#        c.execute("INSERT INTO users (username, password, is_admin) VALUES (?, ?, 1)", (username, hashed_pass))
-   #     conn.commit()
-   #     print("Admin account created successfully.")
-  #  except sqlite3.IntegrityError:
-  #      print("Admin account already exists.")
-  #  conn.close()
-  #  create_admin_account() 
-# Run only once manually:
     
 def signup_form():
     st.subheader("Create Account")
