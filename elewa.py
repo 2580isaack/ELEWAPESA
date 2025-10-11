@@ -38,7 +38,8 @@ from statsmodels.tsa.arima.model import ARIMA
 def init_db():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
-    # Main users table (updated to include profile info)
+
+    # ✅ Main users table (expanded to include all profile info)
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
@@ -46,12 +47,14 @@ def init_db():
             full_name TEXT,
             email TEXT,
             phone TEXT,
+            location TEXT,
+            date_of_birth TEXT,
+            age INTEGER,
             profile_pic TEXT,
             is_admin INTEGER DEFAULT 0,
             is_active INTEGER DEFAULT 1
         )
     ''')
-    # Activity logs table
     c.execute('''
         CREATE TABLE IF NOT EXISTS activity_logs (
             username TEXT,
@@ -59,7 +62,6 @@ def init_db():
             activity TEXT
         )
     ''')
-    # Active sessions (for tracking logins)
     c.execute('''
         CREATE TABLE IF NOT EXISTS active_sessions (
             username TEXT PRIMARY KEY,
@@ -68,7 +70,6 @@ def init_db():
     ''')
     conn.commit()
     conn.close()
-# Initialize the DB
 init_db()
 def add_user(username, password, is_admin=0):
     conn = sqlite3.connect("users.db")
@@ -175,104 +176,132 @@ def set_user_status(username, active):
     conn.close()
 # ---- PROFILE PAGE ----
 def profile_page(username):
-    st.title("Personal Profile")
+    st.title("👤 Personal Profile")
     st.caption("Manage your personal information, profile picture, and account security.")
-    # File paths
     user_data_file = "user_data.csv"
     profile_pic_dir = "profile_pics"
-    # Ensure directory exists
     if not os.path.exists(profile_pic_dir):
         os.makedirs(profile_pic_dir)
-    # Load or initialize user data
     if os.path.exists(user_data_file):
         user_df = pd.read_csv(user_data_file)
     else:
-        user_df = pd.DataFrame(columns=["Username", "Full Name", "Email", "Phone", "Location", "Profile Pic", "Password"])
-    # Retrieve current user info
+        user_df = pd.DataFrame(columns=[
+            "Username", "Full Name", "Email", "Phone", "Gender", "Location",
+            "Year", "Month", "Day", "Age", "Profile Pic", "Password"
+        ])
     user_row = user_df[user_df["Username"] == username]
     if not user_row.empty:
         full_name = user_row.iloc[0].get("Full Name", "")
         email = user_row.iloc[0].get("Email", "")
         phone = user_row.iloc[0].get("Phone", "")
+        gender = user_row.iloc[0].get("Gender", "")
         location = user_row.iloc[0].get("Location", "")
+        year_of_birth = user_row.iloc[0].get("Year", "")
+        month_of_birth = user_row.iloc[0].get("Month", "")
+        day_of_birth = user_row.iloc[0].get("Day", "")
         profile_pic_path = user_row.iloc[0].get("Profile Pic", None)
-        #  Ensure the path is valid before using it
         if not isinstance(profile_pic_path, str) or not profile_pic_path.strip():
             profile_pic_path = None
     else:
-        st.error(" User profile not found.")
-        return
-    # Display current profile pic
+        full_name = email = phone = gender = location = ""
+        year_of_birth = month_of_birth = day_of_birth = ""
+        profile_pic_path = None
     col1, col2 = st.columns([1, 2])
     with col1:
         if profile_pic_path and os.path.exists(profile_pic_path):
             st.image(profile_pic_path, width=150, caption="Profile Picture")
         else:
-            st.image("https://cdn-icons-png.flaticon.com/512/847/847969.png", width=150, caption="Default Profile")
-    #Profile info form 
+            st.image("https://cdn-icons-png.flaticon.com/512/847/847969.png",
+                     width=150, caption="Default Profile")
     with col2:
-        st.subheader("Update Personal Info")
+        st.subheader("📝 Update Personal Info")
         with st.form("update_profile_form"):
             new_name = st.text_input("Full Name", value=full_name)
             new_email = st.text_input("Email", value=email)
             new_phone = st.text_input("Phone Number", value=phone)
+            new_gender = st.selectbox("Gender", ["", "Male", "Female", "Other"],
+                                      index=["", "Male", "Female", "Other"].index(gender) if gender in ["Male", "Female", "Other"] else 0)
             new_location = st.text_input("Location", value=location)
+            st.markdown("### 🎂 Date of Birth")
+            current_year = datetime.date.today().year
+            year = st.selectbox("Year", list(range(1950, current_year + 1)),
+                                index=list(range(1950, current_year + 1)).index(int(year_of_birth))
+                                if str(year_of_birth).isdigit() else len(range(1950, current_year + 1)) - 1)
+            month = st.selectbox("Month", list(range(1, 13)),
+                                 index=int(month_of_birth) - 1 if str(month_of_birth).isdigit() else 0)
+            day = st.selectbox("Day", list(range(1, 32)),
+                               index=int(day_of_birth) - 1 if str(day_of_birth).isdigit() else 0)
+            age = current_year - int(year)
+            st.write(f"**Calculated Age:** {age} years")
             new_pic = st.file_uploader("Upload Profile Picture", type=["jpg", "jpeg", "png"])
-            save_btn = st.form_submit_button("Save Changes")
+            save_btn = st.form_submit_button("💾 Save Changes")
             if save_btn:
-                # Handle image upload
                 if new_pic:
                     pic_path = os.path.join(profile_pic_dir, f"{username}.jpg")
                     with open(pic_path, "wb") as f:
                         f.write(new_pic.getbuffer())
                     profile_pic_path = pic_path
-                # Update DataFrame
-                user_df.loc[user_df["Username"] == username, ["Full Name", "Email", "Phone", "Location", "Profile Pic"]] = [
-                    new_name, new_email, new_phone, new_location, profile_pic_path
-                ]
-                user_df.to_csv(user_data_file, index=False)
-                st.success("Profile information updated successfully!")
+                if username in user_df["Username"].values:
+                    user_df.loc[user_df["Username"] == username, [
+                        "Full Name", "Email", "Phone", "Gender", "Location",
+                        "Year", "Month", "Day", "Age", "Profile Pic"
+                    ]] = [
+                        new_name, new_email, new_phone, new_gender, new_location,
+                        year, month, day, age, profile_pic_path
+                    ]
+                else:
+                    new_row = pd.DataFrame([{
+                        "Username": username,
+                        "Full Name": new_name,
+                        "Email": new_email,
+                        "Phone": new_phone,
+                        "Gender": new_gender,
+                        "Location": new_location,
+                        "Year": year,
+                        "Month": month,
+                        "Day": day,
+                        "Age": age,
+                        "Profile Pic": profile_pic_path,
+                        "Password": ""
+                    }])
+                    user_df = pd.concat([user_df, new_row], ignore_index=True)
 
-                # Log activity if function exists
+                user_df.to_csv(user_data_file, index=False)
+                st.success("✅ Profile information updated successfully!")
                 try:
                     log_user_activity(username, "Updated personal information")
                 except:
                     pass
     st.divider()
-    # Change password section
-   # ✅ Entire password section inside expander
-with st.expander("🔒 Change Password"):
-    st.markdown("### Update Your Password")  # optional header inside dropdown
-
-    with st.form("change_password_form"):
-        old_pass = st.text_input("Old Password", type="password")
-        new_pass = st.text_input("New Password", type="password")
-        confirm_pass = st.text_input("Confirm New Password", type="password")
-        change_btn = st.form_submit_button("Update Password")
-
-        if change_btn:
-            try:
-                stored_hash = user_row.iloc[0]["Password"]
-                if isinstance(stored_hash, str):
-                    stored_hash = stored_hash.encode("utf-8")
-
-                if bcrypt.checkpw(old_pass.encode("utf-8"), stored_hash):
-                    if new_pass == confirm_pass:
-                        new_hash = bcrypt.hashpw(new_pass.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-                        user_df.loc[user_df["Username"] == username, "Password"] = new_hash
-                        user_df.to_csv(user_data_file, index=False)
-                        st.success("Password updated successfully!")
-                        try:
-                            log_user_activity(username, "Changed password")
-                        except:
-                            pass
+    with st.expander("🔒 Change Password"):
+        st.markdown("### Update Your Password")
+        with st.form("change_password_form"):
+            old_pass = st.text_input("Old Password", type="password")
+            new_pass = st.text_input("New Password", type="password")
+            confirm_pass = st.text_input("Confirm New Password", type="password")
+            change_btn = st.form_submit_button("Update Password")
+            if change_btn:
+                try:
+                    stored_hash = user_row.iloc[0]["Password"]
+                    if isinstance(stored_hash, str):
+                        stored_hash = stored_hash.encode("utf-8")
+                    if bcrypt.checkpw(old_pass.encode("utf-8"), stored_hash):
+                        if new_pass == confirm_pass:
+                            new_hash = bcrypt.hashpw(new_pass.encode("utf-8"),
+                            bcrypt.gensalt()).decode("utf-8")
+                            user_df.loc[user_df["Username"] == username, "Password"] = new_hash
+                            user_df.to_csv(user_data_file, index=False)
+                            st.success("✅ Password updated successfully!")
+                            try:
+                                log_user_activity(username, "Changed password")
+                            except:
+                                pass
+                        else:
+                            st.error("New passwords do not match.")
                     else:
-                        st.error("New passwords do not match.")
-                else:
-                    st.error("Incorrect old password.")
-            except Exception as e:
-                st.error(f"Error while changing password: {e}")
-
+                        st.error("Incorrect old password.")
+                except Exception as e:
+                    st.error(f"Error while changing password: {e}")
 def delete_user(username):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
