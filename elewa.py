@@ -11,6 +11,7 @@
 import streamlit as st
 import os
 # %%writefile app.py
+import bcrypt
 import json
 import csv
 from datetime import datetime
@@ -31,7 +32,6 @@ from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.cluster import KMeans
-import bcrypt
 import io
 from scipy import stats
 from statsmodels.tsa.seasonal import seasonal_decompose
