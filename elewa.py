@@ -387,8 +387,8 @@ if choice == "Login":
                                   st.error("❌ Username not found.")
                                   st.session_state.nav_selection = "Home"
                                   st.rerun()
-                             else:
-                                st.error("Invalid user login details")
+                                else:
+                                  st.error("Invalid user login details")
         elif login_type == "Admin":
                 conn = sqlite3.connect("users.db")
                 c = conn.cursor()
