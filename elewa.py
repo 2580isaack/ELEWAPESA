@@ -374,12 +374,12 @@ if choice == "Login":
                           reset_username = st.text_input("Enter your username")
                           new_pass = st.text_input("Enter new password", type="password")
                           confirm_pass = st.text_input("Confirm new password", type="password")
-                           if st.button("Reset Password"):
-                           if not reset_username or not new_pass or not confirm_pass:
+                          if st.button("Reset Password"):
+                          if not reset_username or not new_pass or not confirm_pass:
                                    st.warning("Please fill in all fields.")
-                           elif new_pass != confirm_pass:
+                          elif new_pass != confirm_pass:
                                    st.error("Passwords do not match.")
-                           else:
+                          else:
                               if reset_password(reset_username, new_pass):
                                  st.success("✅ Password reset successfully. You can now log in.")
                                    st.session_state.show_reset_form = False
