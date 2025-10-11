@@ -240,12 +240,14 @@ def profile_page(username):
                     pass
     st.divider()
     # Change password section
-    st.subheader("Change Password")
+    with st.expander("Change Password"):
+    st.subheader("Update Your Password")
     with st.form("change_password_form"):
         old_pass = st.text_input("Old Password", type="password")
         new_pass = st.text_input("New Password", type="password")
         confirm_pass = st.text_input("Confirm New Password", type="password")
         change_btn = st.form_submit_button("Update Password")
+
         if change_btn:
             try:
                 stored_hash = user_row.iloc[0]["Password"]
