@@ -329,7 +329,7 @@ def get_visible_pages():
     c.execute('''CREATE TABLE IF NOT EXISTS page_visibility
                  (page_name TEXT PRIMARY KEY, is_visible INTEGER)''')
     conn.commit()
-    default_pages = ["Home", "About", "SACCO Interface", "Budgeting", "Literature", "M-Pesa Monitor"]
+    default_pages = ["Home", "About", "SACCO Interface", "Budgeting", "Profile", "Literature", "M-Pesa Monitor"]
     for page in default_pages:
         c.execute("INSERT OR IGNORE INTO page_visibility (page_name, is_visible) VALUES (?, ?)", (page, 1))
     conn.commit()
@@ -437,6 +437,7 @@ if st.session_state.logged_in:
         menu.append("menu")
     if page_visibility.get("About", True):
         menu.append("About")
+    
     if page_visibility.get("SACCO Interface", True):
         menu.append("SACCO Interface")
     if page_visibility.get("Budgeting", True):
