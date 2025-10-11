@@ -166,12 +166,6 @@ def set_user_status(username, active):
     c.execute("UPDATE users SET is_active = ? WHERE username = ?", (1 if active else 0, username))
     conn.commit()
     conn.close()
-
-import streamlit as st
-import pandas as pd
-import os
-import bcrypt
-
 # ---- PROFILE PAGE ----
 def profile_page(username):
     st.title("👤 Personal Profile")
