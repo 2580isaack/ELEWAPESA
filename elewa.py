@@ -331,7 +331,7 @@ if choice == "Login":
                     st.rerun()
             else:
                     st.error("Invalid user login details")
-            elif login_type == "Admin":
+        elif login_type == "Admin":
                 conn = sqlite3.connect("users.db")
                 c = conn.cursor()
                 c.execute("SELECT password FROM users WHERE username = ? AND is_admin = 1", (username,))
