@@ -38,14 +38,20 @@ from statsmodels.tsa.arima.model import ARIMA
 def init_db():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
+    # Main users table (updated to include profile info)
     c.execute('''
-         CREATE TABLE IF NOT EXISTS users (
+        CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
             password BLOB NOT NULL,
+            full_name TEXT,
+            email TEXT,
+            phone TEXT,
+            profile_pic TEXT,
             is_admin INTEGER DEFAULT 0,
             is_active INTEGER DEFAULT 1
         )
     ''')
+    # Activity logs table
     c.execute('''
         CREATE TABLE IF NOT EXISTS activity_logs (
             username TEXT,
@@ -53,6 +59,7 @@ def init_db():
             activity TEXT
         )
     ''')
+    # Active sessions (for tracking logins)
     c.execute('''
         CREATE TABLE IF NOT EXISTS active_sessions (
             username TEXT PRIMARY KEY,
@@ -61,6 +68,7 @@ def init_db():
     ''')
     conn.commit()
     conn.close()
+# Initialize the DB
 init_db()
 def add_user(username, password, is_admin=0):
     conn = sqlite3.connect("users.db")
@@ -77,9 +85,9 @@ def add_user(username, password, is_admin=0):
  # --- TEMPORARY ADMIN CREATION (run only once) ---
 #try:
   #  add_user("username", "password123", is_admin=1)
-   # print("✅ Default admin account created successfully.")
+   # print("Default admin account created successfully.")
 #except Exception as e:
-    #print(f"⚠️ Admin creation skipped or failed: {e}")
+    #print(f"Admin creation skipped or failed: {e}")
 ## --- REMOVE OR COMMENT THIS AFTER SUCCESSFUL RUN ---
 def check_login(username, password):
     conn = sqlite3.connect("users.db")
@@ -112,9 +120,9 @@ def create_admin_account():
         ''')
         c.execute("INSERT INTO users (username, password, is_admin) VALUES (?, ?, 1)", (username, hashed_pass))
         conn.commit()
-        print("✅ Admin account created successfully!")
+        print("Admin account created successfully!")
     except sqlite3.IntegrityError:
-        print("⚠️ Admin account already exists.")
+        print("Admin account already exists.")
     finally:
         conn.close()
 #create_admin_account()   
@@ -152,7 +160,6 @@ def get_activity_logs():
     logs = c.fetchall()
     conn.close()
     return logs
-
 def get_all_users():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
@@ -168,7 +175,7 @@ def set_user_status(username, active):
     conn.close()
 # ---- PROFILE PAGE ----
 def profile_page(username):
-    st.title("👤 Personal Profile")
+    st.title("Personal Profile")
     st.caption("Manage your personal information, profile picture, and account security.")
     # File paths
     user_data_file = "user_data.csv"
@@ -204,14 +211,14 @@ def profile_page(username):
             st.image("https://cdn-icons-png.flaticon.com/512/847/847969.png", width=150, caption="Default Profile")
     #Profile info form 
     with col2:
-        st.subheader("📋 Update Personal Info")
+        st.subheader("Update Personal Info")
         with st.form("update_profile_form"):
             new_name = st.text_input("Full Name", value=full_name)
             new_email = st.text_input("Email", value=email)
             new_phone = st.text_input("Phone Number", value=phone)
             new_location = st.text_input("Location", value=location)
             new_pic = st.file_uploader("Upload Profile Picture", type=["jpg", "jpeg", "png"])
-            save_btn = st.form_submit_button("💾 Save Changes")
+            save_btn = st.form_submit_button("Save Changes")
             if save_btn:
                 # Handle image upload
                 if new_pic:
@@ -224,7 +231,7 @@ def profile_page(username):
                     new_name, new_email, new_phone, new_location, profile_pic_path
                 ]
                 user_df.to_csv(user_data_file, index=False)
-                st.success("✅ Profile information updated successfully!")
+                st.success("Profile information updated successfully!")
 
                 # Log activity if function exists
                 try:
@@ -233,12 +240,12 @@ def profile_page(username):
                     pass
     st.divider()
     # Change password section
-    st.subheader("🔐 Change Password")
+    st.subheader("Change Password")
     with st.form("change_password_form"):
         old_pass = st.text_input("Old Password", type="password")
         new_pass = st.text_input("New Password", type="password")
         confirm_pass = st.text_input("Confirm New Password", type="password")
-        change_btn = st.form_submit_button("🔄 Update Password")
+        change_btn = st.form_submit_button("Update Password")
         if change_btn:
             try:
                 stored_hash = user_row.iloc[0]["Password"]
@@ -250,15 +257,15 @@ def profile_page(username):
                         new_hash = bcrypt.hashpw(new_pass.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
                         user_df.loc[user_df["Username"] == username, "Password"] = new_hash
                         user_df.to_csv(user_data_file, index=False)
-                        st.success("✅ Password updated successfully!")
+                        st.success("Password updated successfully!")
                         try:
                             log_user_activity(username, "Changed password")
                         except:
                             pass
                     else:
-                        st.error("⚠️ New passwords do not match.")
+                        st.error("New passwords do not match.")
                 else:
-                    st.error("❌ Incorrect old password.")
+                    st.error("Incorrect old password.")
             except Exception as e:
                 st.error(f"An error occurred while changing password: {e}")
 def delete_user(username):
@@ -469,10 +476,8 @@ nav_default = st.session_state.get("nav_selection", "Login")
 if nav_default not in menu:
     nav_default = menu[0]
 
-choice = st.sidebar.selectbox("📂 Navigation", menu, index=menu.index(nav_default))
+choice = st.sidebar.selectbox("Navigation", menu , index=menu.index(nav_default))
 st.session_state.nav_selection = choice
-
-# ---- PAGE ROUTING ----
 if choice == "Login":
     st.title("Login to ElewaPesa")
     login_type = st.radio("Login as:", ("User", "Admin"))
@@ -510,11 +515,9 @@ if choice == "Login":
                 st.rerun()
             else:
                 st.error("Invalid admin login details.")
-
-    # 👇 Forgot Password Section (OUTSIDE the login button logic)
     st.markdown("---")
     st.write("Forgot your password?")
-    if st.button("🔑 Forgot Password?"):
+    if st.button("Forgot Password?"):
         st.session_state.show_reset_form = True
 
     if st.session_state.get("show_reset_form", False):
@@ -530,10 +533,10 @@ if choice == "Login":
                 st.error("Passwords do not match.")
             else:
                 if reset_password(reset_username, new_pass):
-                    st.success("✅ Password reset successfully. You can now log in.")
+                    st.success("Password reset successfully. You can now log in.")
                     st.session_state.show_reset_form = False
                 else:
-                    st.error("❌ Username not found.")
+                    st.error("Username not found.")
 elif choice == "Register":
     st.title("Create Your ElewaPesa Account")
     with st.form("registration_form"):
@@ -575,7 +578,7 @@ elif choice == "Change Password":
         st.session_state.nav_selection = "Login"
         st.stop()
 
-    st.title("🔒 Change Your Password")
+    st.title("Change Your Password")
     old_password = st.text_input("Enter your current password", type="password")
     new_password = st.text_input("Enter your new password", type="password")
     confirm_password = st.text_input("Confirm new password", type="password")
@@ -587,9 +590,9 @@ elif choice == "Change Password":
             st.error("New passwords do not match.")
         else:
             if change_password(st.session_state.username, old_password, new_password):
-                st.success("✅ Your password has been changed successfully.")
+                st.success("Your password has been changed successfully.")
             else:
-                st.error("❌ Incorrect old password. Please try again.")
+                st.error("Incorrect old password. Please try again.")
 elif choice == "Logout":
     if st.session_state.logged_in:
         log_session(st.session_state.username, 'logout')
@@ -611,8 +614,8 @@ elif choice == "Admin Dashboard":
         st.stop()
     log_activity(st.session_state.username, 'Viewed Admin Dashboard')
     st.title("Administrator Dashboard")
-    st.markdown("Welcome, Admin 👑")
-    st.markdown("### 👥 Registered Users")
+    st.markdown("Welcome, Admin")
+    st.markdown("###Registered Users")
     users = get_all_users()
     if users:
         user_df = pd.DataFrame(users, columns=["Username", "Is Admin", "Is Active"])
@@ -621,7 +624,7 @@ elif choice == "Admin Dashboard":
         st.dataframe(user_df, use_container_width=True)
     else:
         st.info("No users registered yet.")
-    st.markdown("### 🔐 Manage User Status")
+    st.markdown("###Manage User Status")
     all_users = [user[0] for user in users] if users else []
     selected_user = st.selectbox("Select user to manage status:", ["-- Select User --"] + all_users)
 
@@ -639,14 +642,14 @@ elif choice == "Admin Dashboard":
                 st.success(f"User '{selected_user}' activated.")
                 log_user_activity(st.session_state.username, f"Activated user {selected_user}")
                 st.rerun()
-    st.markdown("### 📜 User Activity Logs")
+    st.markdown("###User Activity Logs")
     logs = get_activity_logs()
     if logs:
         log_df = pd.DataFrame(logs, columns=["Username", "Timestamp", "Activity"])
         st.dataframe(log_df, use_container_width=True)
     else:
         st.info("No user activity logs found.")
-    st.markdown("### 🌍 Manage Page Visibility")
+    st.markdown("###Manage Page Visibility")
     current_visibility = get_visible_pages()
     st.write("Control which pages are visible to non-admin users.")
     for page, is_visible in current_visibility.items():
@@ -656,7 +659,7 @@ elif choice == "Admin Dashboard":
             st.info(f"Visibility of '{page}' page updated. Changes will appear on next load.")
             log_user_activity(st.session_state.username, f"Set visibility of '{page}' to {new_visibility}")
             st.rerun()
-    st.markdown("### 🧑‍💼 Add New Admin User")
+    st.markdown("### Add New Admin User")
     new_admin_user = st.text_input("New Admin Username")
     new_admin_pass = st.text_input("New Admin Password", type='password')
     if st.button("Add Admin"):
@@ -670,7 +673,7 @@ elif choice == "Admin Dashboard":
         else:
             st.warning("Please fill in all fields before adding.")
     st.markdown("---")
-    if st.button("🚪 Logout"):
+    if st.button("Logout"):
         log_session(st.session_state.username, 'logout')
         log_user_activity(st.session_state.username, "Logged out from Admin Dashboard")
         st.session_state.logged_in = False
@@ -1082,12 +1085,8 @@ st.write("Welcome to the ElewaPesa dashboard! Analyze youth financial behaviors 
 st.markdown("""
 ---
 **Contact Us**  
-📞 +254 110 457 706  
-📧 [isaackmutembei335@gmail.com](mailto:isaackmutembei335@gmail.com)  
-💬 WhatsApp: [Chat Now](https://wa.me/254110457706)
+📞 +254 110 457 706      📧 [isaackmutembei335@gmail.com](mailto:isaackmutembei335@gmail.com)      💬 WhatsApp: [Chat Now](https://wa.me/254110457706)
 """)
-st.markdown("""
-If you've forgotten your password, go to **Login → Forgot Password?**
-""")
+
 
 
