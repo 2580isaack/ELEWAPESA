@@ -174,67 +174,86 @@ def profile_page(username):
     # File paths
     user_data_file = "user_data.csv"
     profile_pic_dir = "profile_pics"
-
-    if not os.path.exists(profile_pic_dir):
-        os.makedirs(profile_pic_dir)
+    os.makedirs(profile_pic_dir, exist_ok=True)
 
     # Load or initialize user data
     if os.path.exists(user_data_file):
         user_df = pd.read_csv(user_data_file)
     else:
-        user_df = pd.DataFrame(columns=["Username", "Full Name", "Email", "Phone", "Location", "Profile Pic", "Password"])
+        user_df = pd.DataFrame(columns=[
+            "Username", "Full Name", "Email", "Phone", "Location", "Profile Pic", "Password"
+        ])
 
-    # Retrieve current user info
-    user_row = user_df[user_df["Username"] == username]
-    if not user_row.empty:
-        full_name = user_row.iloc[0].get("Full Name", "")
-        email = user_row.iloc[0].get("Email", "")
-        phone = user_row.iloc[0].get("Phone", "")
-        location = user_row.iloc[0].get("Location", "")
-        profile_pic_path = user_row.iloc[0].get("Profile Pic", None)
-    else:
-        st.error("⚠️ User profile not found.")
-        return
+    # --- Ensure user row exists ---
+    if username not in user_df["Username"].values:
+        # Create empty record if user not found
+        user_df = pd.concat([user_df, pd.DataFrame([{
+            "Username": username,
+            "Full Name": "",
+            "Email": "",
+            "Phone": "",
+            "Location": "",
+            "Profile Pic": "",
+            "Password": ""
+        }])], ignore_index=True)
+        user_df.to_csv(user_data_file, index=False)
 
-    # ---- Display current profile pic ----
+    # Retrieve user info
+    user_row = user_df[user_df["Username"] == username].iloc[0]
+    full_name = user_row.get("Full Name", "")
+    email = user_row.get("Email", "")
+    phone = user_row.get("Phone", "")
+    location = user_row.get("Location", "")
+    profile_pic_path = user_row.get("Profile Pic", "")
+
+    # --- Profile header card ---
+    st.markdown(f"""
+        <div style='background-color:#f9fafb;padding:15px;border-radius:15px;
+        box-shadow:0 2px 6px rgba(0,0,0,0.05);margin-bottom:20px;'>
+            <h4 style='margin:0;'>Welcome, {username} 👋</h4>
+            <p style='color:gray;margin:0;'>Update your ElewaPesa profile and security settings.</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # ---- Display & edit section ----
     col1, col2 = st.columns([1, 2])
     with col1:
         if profile_pic_path and os.path.exists(profile_pic_path):
-            st.image(profile_pic_path, width=150, caption="Profile Picture")
+            st.image(profile_pic_path, width=160, caption="Profile Picture")
         else:
-            st.image("https://cdn-icons-png.flaticon.com/512/847/847969.png", width=150, caption="Default Profile")
+            st.image("https://cdn-icons-png.flaticon.com/512/847/847969.png", width=160, caption="Default Picture")
 
     with col2:
-        st.subheader("📋 Update Personal Info")
+        st.subheader("📋 Edit Personal Details")
         with st.form("update_profile_form"):
             new_name = st.text_input("Full Name", value=full_name)
-            new_email = st.text_input("Email", value=email)
+            new_email = st.text_input("Email Address", value=email)
             new_phone = st.text_input("Phone Number", value=phone)
             new_location = st.text_input("Location", value=location)
-            new_pic = st.file_uploader("Upload Profile Picture", type=["jpg", "jpeg", "png"])
+            new_pic = st.file_uploader("Upload New Profile Picture", type=["jpg", "jpeg", "png"])
             save_btn = st.form_submit_button("💾 Save Changes")
 
             if save_btn:
-                # Handle image upload
+                # Handle new profile picture
                 if new_pic:
                     pic_path = os.path.join(profile_pic_dir, f"{username}.jpg")
                     with open(pic_path, "wb") as f:
                         f.write(new_pic.getbuffer())
                     profile_pic_path = pic_path
 
-                # Update info in DataFrame
-                user_df.loc[user_df["Username"] == username, ["Full Name", "Email", "Phone", "Location", "Profile Pic"]] = [
-                    new_name, new_email, new_phone, new_location, profile_pic_path
-                ]
-                user_df.to_csv(user_data_file, index=False)
-                st.success("✅ Profile information updated successfully!")
+                # Update all details
+                user_df.loc[user_df["Username"] == username, [
+                    "Full Name", "Email", "Phone", "Location", "Profile Pic"
+                ]] = [new_name, new_email, new_phone, new_location, profile_pic_path]
 
-                # Log activity
-                log_user_activity(username, "Updated personal information")
+                user_df.to_csv(user_data_file, index=False)
+                log_user_activity(username, "Updated personal profile details")
+                st.success("✅ Your profile information has been updated successfully!")
+                st.experimental_rerun()  # instantly refresh updated info
 
     st.divider()
 
-    # ---- Change password section ----
+    # ---- Password Change ----
     st.subheader("🔐 Change Password")
     with st.form("change_password_form"):
         old_pass = st.text_input("Old Password", type="password")
@@ -244,8 +263,16 @@ def profile_page(username):
 
         if change_btn:
             try:
-                stored_hash = user_row.iloc[0]["Password"].encode("utf-8")
-                if bcrypt.checkpw(old_pass.encode("utf-8"), stored_hash):
+                stored_hash = str(user_row.get("Password", "")).encode("utf-8")
+                if stored_hash.strip() == b"":
+                    st.warning("⚠️ No existing password found — set a new one below.")
+                    if new_pass == confirm_pass:
+                        new_hash = bcrypt.hashpw(new_pass.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+                        user_df.loc[user_df["Username"] == username, "Password"] = new_hash
+                        user_df.to_csv(user_data_file, index=False)
+                        st.success("✅ Password set successfully!")
+                        log_user_activity(username, "Set new password")
+                elif bcrypt.checkpw(old_pass.encode("utf-8"), stored_hash):
                     if new_pass == confirm_pass:
                         new_hash = bcrypt.hashpw(new_pass.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
                         user_df.loc[user_df["Username"] == username, "Password"] = new_hash
@@ -257,7 +284,7 @@ def profile_page(username):
                 else:
                     st.error("❌ Incorrect old password.")
             except Exception as e:
-                st.error(f"An error occurred while changing password: {e}")
+                st.error(f"⚠️ Error while changing password: {e}")
 
 def delete_user(username):
     conn = sqlite3.connect("users.db")
@@ -421,6 +448,7 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+# ---- SESSION STATE INITIALIZATION ----
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "username" not in st.session_state:
@@ -429,7 +457,10 @@ if "is_admin" not in st.session_state:
     st.session_state.is_admin = False
 if "nav_selection" not in st.session_state:
     st.session_state.nav_selection = "Login"
+
 page_visibility = get_visible_pages()
+
+# ---- LOGGED IN STATE ----
 if st.session_state.logged_in:
     menu = []
 
@@ -437,7 +468,6 @@ if st.session_state.logged_in:
         menu.append("menu")
     if page_visibility.get("About", True):
         menu.append("About")
-    
     if page_visibility.get("SACCO Interface", True):
         menu.append("SACCO Interface")
     if page_visibility.get("Budgeting", True):
@@ -446,24 +476,64 @@ if st.session_state.logged_in:
         menu.append("Literature")
     if page_visibility.get("Mobile money Monitor", True):
         menu.append("Mobile money Monitor")
+    
+    # Admin-only view
     if st.session_state.is_admin:
-        menu.append("Admin Dashboard") #else: hide admin link entirel
+        menu.append("Admin Dashboard")
+
+    # User account options
     menu.append("Profile")
-    menu.append("Change Password")
-    menu.append("Logout") 
+    menu.append("Logout")
+
+# ---- LOGGED OUT STATE ----
 else:
     menu = ["Login", "Register", "About"]
-nav_default = st.session_state.get("nav_selection")
+
+# ---- SIDEBAR NAVIGATION ----
 nav_default = st.session_state.get("nav_selection", "Login")
 if nav_default not in menu:
     nav_default = menu[0]
-choice = st.sidebar.selectbox("Navigation", menu, index=menu.index(nav_default))
+
+choice = st.sidebar.selectbox("📂 Navigation", menu, index=menu.index(nav_default))
 st.session_state.nav_selection = choice
+
+# ---- PAGE ROUTING ----
 if choice == "Login":
     st.title("Login to ElewaPesa")
     login_type = st.radio("Login as:", ("User", "Admin"))
     username = st.text_input("Username")
-    password = st.text_input("Password", type='password')
+    password = st.text_input("Password", type="password")
+    # (Your login logic continues here...)
+
+elif choice == "Register":
+    register_user()  # Assuming you have a registration function
+
+elif choice == "About":
+    about_page()
+
+elif choice == "menu":
+    menu_page(st.session_state.username)
+
+elif choice == "SACCO Interface":
+    sacco_page(st.session_state.username)
+
+elif choice == "Budgeting":
+    budgeting_page(st.session_state.username)
+
+elif choice == "Literature":
+    literature_page()
+
+elif choice == "Mobile money Monitor":
+    mobile_monitor_page(st.session_state.username)
+
+elif choice == "Admin Dashboard":
+    admin_dashboard_page(st.session_state.username)
+
+elif choice == "Profile":
+    profile_page(st.session_state.username)  # 👈 invokes your new profile page
+
+elif choice == "Logout":
+    logout_user()
 
     if st.button("Login"):
         if login_type == "User":
