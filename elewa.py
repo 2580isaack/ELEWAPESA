@@ -353,58 +353,62 @@ if choice == "Login":
     login_type = st.radio("Login as:", ("User", "Admin"))
     username = st.text_input("Username")
     password = st.text_input("Password", type='password')
+
     if st.button("Login"):
         if login_type == "User":
             success, is_admin = check_login(username, password)
             if success:
                 if is_admin and login_type == "User":
-                     st.error("Invalid user login details")
+                    st.error("Invalid user login details")
                 else:
                     st.session_state.logged_in = True
                     st.session_state.username = username
                     st.session_state.is_admin = is_admin
                     log_user_activity(username, "Logged in as User")
                     st.success(f"Welcome back, {username}! Redirecting to Home...")
-                    st.markdown("---")
-                    st.write("Forgot your password?")
-                    if st.button("🔑 Forgot Password?"):
-                       st.session_state.show_reset_form = True
-                       if st.session_state.get("show_reset_form", False):
-                          st.subheader("Reset Your Password")
-                          reset_username = st.text_input("Enter your username")
-                          new_pass = st.text_input("Enter new password", type="password")
-                          confirm_pass = st.text_input("Confirm new password", type="password")
-                          if st.button("Reset Password"):
-                             if not reset_username or not new_pass or not confirm_pass:
-                                   st.warning("Please fill in all fields.")
-                             elif new_pass != confirm_pass:
-                                   st.error("Passwords do not match.")
-                             else:
-                                if reset_password(reset_username, new_pass):
-                                 st.success("✅ Password reset successfully. You can now log in.")
-                                 st.session_state.show_reset_form = False
-                                else:
-                                  st.error("❌ Username not found.")
-                                  st.session_state.nav_selection = "Home"
-                                  st.rerun()
-                                else:
-                                  st.error("Invalid user login details")
+            else:
+                st.error("Invalid user login details")
+
         elif login_type == "Admin":
-                conn = sqlite3.connect("users.db")
-                c = conn.cursor()
-                c.execute("SELECT password FROM users WHERE username = ? AND is_admin = 1", (username,))
-                result = c.fetchone()
-                conn.close()
-                if result and bcrypt.checkpw(password.encode(), result[0]):
-                    st.session_state.logged_in = True
-                    st.session_state.username = username
-                    st.session_state.is_admin = True
-                    log_user_activity(username, "Logged in as Admin")
-                    st.success("Welcome Admin!")
-                    st.session_state.nav_selection = "Admin Dashboard"
-                    st.rerun()
+            conn = sqlite3.connect("users.db")
+            c = conn.cursor()
+            c.execute("SELECT password FROM users WHERE username = ? AND is_admin = 1", (username,))
+            result = c.fetchone()
+            conn.close()
+            if result and bcrypt.checkpw(password.encode(), result[0]):
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.session_state.is_admin = True
+                log_user_activity(username, "Logged in as Admin")
+                st.success("Welcome Admin!")
+                st.session_state.nav_selection = "Admin Dashboard"
+                st.rerun()
+            else:
+                st.error("Invalid admin login details.")
+
+    # 👇 Forgot Password Section (OUTSIDE the login button logic)
+    st.markdown("---")
+    st.write("Forgot your password?")
+    if st.button("🔑 Forgot Password?"):
+        st.session_state.show_reset_form = True
+
+    if st.session_state.get("show_reset_form", False):
+        st.subheader("Reset Your Password")
+        reset_username = st.text_input("Enter your username")
+        new_pass = st.text_input("Enter new password", type="password")
+        confirm_pass = st.text_input("Confirm new password", type="password")
+
+        if st.button("Reset Password"):
+            if not reset_username or not new_pass or not confirm_pass:
+                st.warning("Please fill in all fields.")
+            elif new_pass != confirm_pass:
+                st.error("Passwords do not match.")
+            else:
+                if reset_password(reset_username, new_pass):
+                    st.success("✅ Password reset successfully. You can now log in.")
+                    st.session_state.show_reset_form = False
                 else:
-                    st.error("Invalid admin login details.")
+                    st.error("❌ Username not found.")
 elif choice == "Register":
     st.title("Create Your ElewaPesa Account")
     with st.form("registration_form"):
