@@ -783,6 +783,13 @@ elif choice == "About":
         st.warning("This page is currently hidden by the administrator.")
         st.session_state.nav_selection = "Login"
         st.rerun()
+
+elif choice == "Profile":
+    if st.session_state.get("logged_in"):
+        profile_page(st.session_state["username"])
+    else:
+        st.warning("Please log in to access your profile.")
+
 elif choice == "SACCO Interface":
     if page_visibility.get("SACCO Interface", True) or st.session_state.is_admin:
         if st.session_state.logged_in:
