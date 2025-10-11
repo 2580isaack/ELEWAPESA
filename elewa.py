@@ -93,7 +93,7 @@ def check_login(username, password):
         if bcrypt.checkpw(password.encode(), stored_pass):
             return True, bool(is_admin)
     return False, False
- def create_admin_account():
+def create_admin_account():
     username = "isaack sani" password = "imisaack2000" 
     conn = sqlite3.connect("users.db") 
     c = conn.cursor() hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt()) 
