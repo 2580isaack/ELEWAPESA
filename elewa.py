@@ -354,8 +354,8 @@ if st.session_state.logged_in:
         menu.append("Mobile money Monitor")
     if st.session_state.is_admin:
         menu.append("Admin Dashboard") #else: hide admin link entirel
-        menu.append("Change Password")
-        menu.append("Logout") 
+    menu.append("Change Password")
+    menu.append("Logout") 
 else:
     menu = ["Login", "Register", "About"]
 nav_default = st.session_state.get("nav_selection")
