@@ -371,9 +371,9 @@ if choice == "Login":
                        st.session_state.show_reset_form = True
                        if st.session_state.get("show_reset_form", False):
                           st.subheader("Reset Your Password")
-                           reset_username = st.text_input("Enter your username")
-                             new_pass = st.text_input("Enter new password", type="password")
-                             confirm_pass = st.text_input("Confirm new password", type="password")
+                          reset_username = st.text_input("Enter your username")
+                          new_pass = st.text_input("Enter new password", type="password")
+                          confirm_pass = st.text_input("Confirm new password", type="password")
                            if st.button("Reset Password"):
                            if not reset_username or not new_pass or not confirm_pass:
                                    st.warning("Please fill in all fields.")
