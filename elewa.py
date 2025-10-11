@@ -75,11 +75,11 @@ def add_user(username, password, is_admin=0):
     conn.close()
     return True
  # --- TEMPORARY ADMIN CREATION (run only once) ---
-try:
-    add_user("isaacksani", "imisaack123", is_admin=1)
-    print("✅ Default admin account created successfully.")
-except Exception as e:
-    print(f"⚠️ Admin creation skipped or failed: {e}")
+#try:
+  #  add_user("username", "password123", is_admin=1)
+   # print("✅ Default admin account created successfully.")
+#except Exception as e:
+    #print(f"⚠️ Admin creation skipped or failed: {e}")
 ## --- REMOVE OR COMMENT THIS AFTER SUCCESSFUL RUN ---
 def check_login(username, password):
     conn = sqlite3.connect("users.db")
@@ -95,8 +95,8 @@ def check_login(username, password):
             return True, bool(is_admin)
     return False, False
 def create_admin_account():
-    username = "isaack sani"
-    password = "imisaack123"
+    username = "isername"
+    password = "password"
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
     hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
@@ -117,7 +117,7 @@ def create_admin_account():
         print("⚠️ Admin account already exists.")
     finally:
         conn.close()
-create_admin_account()   
+#create_admin_account()   
 def signup_form():
     st.subheader("Create Account")
     username = st.text_input("Choose a Username")
