@@ -479,37 +479,6 @@ if choice == "Login":
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
     # (Your login logic continues here...)
-
-elif choice == "Register":
-    register_user()  # Assuming you have a registration function
-
-elif choice == "About":
-    about_page()
-
-elif choice == "menu":
-    menu_page(st.session_state.username)
-
-elif choice == "SACCO Interface":
-    sacco_page(st.session_state.username)
-
-elif choice == "Budgeting":
-    budgeting_page(st.session_state.username)
-
-elif choice == "Literature":
-    literature_page()
-
-elif choice == "Mobile money Monitor":
-    mobile_monitor_page(st.session_state.username)
-
-elif choice == "Admin Dashboard":
-    admin_dashboard_page(st.session_state.username)
-
-elif choice == "Profile":
-    profile_page(st.session_state.username)  # 👈 invokes your new profile page
-
-elif choice == "Logout":
-    logout_user()
-
     if st.button("Login"):
         if login_type == "User":
             success, is_admin = check_login(username, password)
