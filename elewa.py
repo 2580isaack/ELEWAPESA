@@ -152,6 +152,7 @@ def get_activity_logs():
     logs = c.fetchall()
     conn.close()
     return logs
+
 def get_all_users():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
@@ -182,6 +183,21 @@ def change_password(username, old_password, new_password):
         conn.commit()
         conn.close()
         log_user_activity(username, "Changed password successfully.")
+        return True
+    conn.close()
+    return False
+
+def reset_password(username, new_password):
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE username = ?", (username,))
+    result = c.fetchone()
+    if result:
+        new_hashed = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt())
+        c.execute("UPDATE users SET password = ? WHERE username = ?", (new_hashed, username))
+        conn.commit()
+        conn.close()
+        log_user_activity(username, "Password reset using Forgot Password feature.")
         return True
     conn.close()
     return False
@@ -465,25 +481,6 @@ elif choice == "Change Password":
                 st.success("✅ Your password has been changed successfully.")
             else:
                 st.error("❌ Incorrect old password. Please try again.")
-
-
-# ✅ Function must be OUTSIDE the if/elif structure
-def reset_password(username, new_password):
-    conn = sqlite3.connect("users.db")
-    c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE username = ?", (username,))
-    result = c.fetchone()
-    if result:
-        new_hashed = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt())
-        c.execute("UPDATE users SET password = ? WHERE username = ?", (new_hashed, username))
-        conn.commit()
-        conn.close()
-        log_user_activity(username, "Password reset using Forgot Password feature.")
-        return True
-    conn.close()
-    return False
-
-
 elif choice == "Logout":
     if st.session_state.logged_in:
         log_session(st.session_state.username, 'logout')
@@ -494,7 +491,6 @@ elif choice == "Logout":
         st.success("You have been logged out.")
         st.session_state.nav_selection = "Login"
         st.rerun()
-
 elif choice == "Admin Dashboard":
     if not st.session_state.logged_in:
         st.error("You must log in to access this page.")
