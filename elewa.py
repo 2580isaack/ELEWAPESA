@@ -94,7 +94,8 @@ def check_login(username, password):
             return True, bool(is_admin)
     return False, False
 def create_admin_account():
-    username = "isaack sani" password = "imisaack2000" 
+    username = "isaack sani" 
+    password = "imisaack2000" 
     conn = sqlite3.connect("users.db") 
     c = conn.cursor() hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt()) 
 try: 
