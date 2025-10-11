@@ -65,7 +65,7 @@ def init_db():
 init_db()
 def add_user(username, password, is_admin=0):
     conn = sqlite3.connect("users.db")
-   c.execute("SELECT username FROM users WHERE username = ?", (username,))
+    c.execute("SELECT username FROM users WHERE username = ?", (username,))
     if c.fetchone():
         conn.close()
         return False
