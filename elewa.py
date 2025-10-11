@@ -94,19 +94,29 @@ def check_login(username, password):
             return True, bool(is_admin)
     return False, False
 def create_admin_account():
-    username = "isaack sani" 
-    password = "imisaack2000" 
-    conn = sqlite3.connect("users.db") 
-    c = conn.cursor() 
-    hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt()) 
-try: 
-  c.execute("INSERT INTO users (username, password, is_admin) VALUES (?, ?, 1)", (username, hashed_pass)) 
-  conn.commit() 
-  print("Admin account created successfully.") 
-except sqlite3.IntegrityError:
-  print("Admin account already exists.") 
-  conn.close() 
-  #create_admin_account() # Run only once manually:    
+    username = "isaack sani"
+    password = "imisaack2000"
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    try:
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE,
+                password TEXT,
+                is_admin INTEGER DEFAULT 0,
+                is_active INTEGER DEFAULT 1
+            )
+        ''')
+        c.execute("INSERT INTO users (username, password, is_admin) VALUES (?, ?, 1)", (username, hashed_pass))
+        conn.commit()
+        print("✅ Admin account created successfully!")
+    except sqlite3.IntegrityError:
+        print("⚠️ Admin account already exists.")
+    finally:
+        conn.close()
+create_admin_account()   
 def signup_form():
     st.subheader("Create Account")
     username = st.text_input("Choose a Username")
