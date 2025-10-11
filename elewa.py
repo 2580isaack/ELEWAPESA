@@ -433,8 +433,8 @@ page_visibility = get_visible_pages()
 if st.session_state.logged_in:
     menu = []
 
-    if page_visibility.get("Home", True):
-        menu.append("Home")
+    if page_visibility.get("Menu", True):
+        menu.append("menu")
     if page_visibility.get("About", True):
         menu.append("About")
     if page_visibility.get("SACCO Interface", True):
@@ -447,6 +447,7 @@ if st.session_state.logged_in:
         menu.append("Mobile money Monitor")
     if st.session_state.is_admin:
         menu.append("Admin Dashboard") #else: hide admin link entirel
+    menu.append("Profile")
     menu.append("Change Password")
     menu.append("Logout") 
 else:
