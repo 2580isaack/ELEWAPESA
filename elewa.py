@@ -171,6 +171,20 @@ def delete_user(username):
     c.execute("DELETE FROM users WHERE username = ?", (username,))
     conn.commit()
     conn.close()
+def change_password(username, old_password, new_password):
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("SELECT password FROM users WHERE username = ?", (username,))
+    result = c.fetchone()
+    if result and bcrypt.checkpw(old_password.encode(), result[0]):
+        new_hashed = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt())
+        c.execute("UPDATE users SET password = ? WHERE username = ?", (new_hashed, username))
+        conn.commit()
+        conn.close()
+        log_user_activity(username, "Changed password successfully.")
+        return True
+    conn.close()
+    return False
 def log_activity(username, activity):
     pass
 def log_session(username, session_type):
@@ -324,8 +338,8 @@ if st.session_state.logged_in:
         menu.append("Mobile money Monitor")
     if st.session_state.is_admin:
         menu.append("Admin Dashboard") #else: hide admin link entirel
-        menu.append("Logout")
-     
+        menu.append("Change Password")
+        menu.append("Logout") 
 else:
     menu = ["Login", "Register", "About"]
 nav_default = st.session_state.get("nav_selection")
@@ -351,6 +365,26 @@ if choice == "Login":
                     st.session_state.is_admin = is_admin
                     log_user_activity(username, "Logged in as User")
                     st.success(f"Welcome back, {username}! Redirecting to Home...")
+                 st.markdown("---")
+             st.write("Forgot your password?")
+         if st.button("🔑 Forgot Password?"):
+                st.session_state.show_reset_form = True
+          if st.session_state.get("show_reset_form", False):
+                 st.subheader("Reset Your Password")
+                  reset_username = st.text_input("Enter your username")
+                new_pass = st.text_input("Enter new password", type="password")
+               confirm_pass = st.text_input("Confirm new password", type="password")
+           if st.button("Reset Password"):
+            if not reset_username or not new_pass or not confirm_pass:
+                   st.warning("Please fill in all fields.")
+            elif new_pass != confirm_pass:
+                   st.error("Passwords do not match.")
+            else:
+             if reset_password(reset_username, new_pass):
+                     st.success("✅ Password reset successfully. You can now log in.")
+                    st.session_state.show_reset_form = False
+             else:
+                    st.error("❌ Username not found.")
                     st.session_state.nav_selection = "Home"
                     st.rerun()
             else:
@@ -403,6 +437,42 @@ elif choice == "Register":
                     st.session_state.logged_in = False
                     st.session_state.username = username
                     st.session_state.is_admin = False
+
+elif choice == "Change Password":
+    if not st.session_state.logged_in:
+        st.warning("Please log in first.")
+        st.session_state.nav_selection = "Login"
+        st.stop()
+
+    st.title(" Change Your Password")
+    old_password = st.text_input("Enter your current password", type="password")
+    new_password = st.text_input("Enter your new password", type="password")
+    confirm_password = st.text_input("Confirm new password", type="password")
+
+    if st.button("Update Password"):
+        if not old_password or not new_password or not confirm_password:
+            st.warning("Please fill in all fields.")
+        elif new_password != confirm_password:
+            st.error("New passwords do not match.")
+        else:
+            if change_password(st.session_state.username, old_password, new_password):
+                st.success(" Your password has been changed successfully.")
+            else:
+                st.error(" Incorrect old password. Please try again.")
+def reset_password(username, new_password):
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE username = ?", (username,))
+    result = c.fetchone()
+    if result:
+        new_hashed = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt())
+        c.execute("UPDATE users SET password = ? WHERE username = ?", (new_hashed, username))
+        conn.commit()
+        conn.close()
+        log_user_activity(username, "Password reset using Forgot Password feature.")
+        return True
+    conn.close()
+    return False
 elif choice == "Logout":
     if st.session_state.logged_in:
         log_session(st.session_state.username, 'logout')
@@ -884,3 +954,16 @@ elif choice == "Mobile money Monitor":
 st.set_page_config(page_title="ElewaPesa Dashboard", layout="wide")
 st.title("ElewaPesa – Smart Financial Literacy Dashboard")
 st.write("Welcome to the ElewaPesa dashboard! Analyze youth financial behaviors and trends.")
+# --- GLOBAL FOOTER ---
+st.markdown("""
+---
+**Contact Us**  
+📞 +254 110 457 706  
+📧 [isaackmutembei335@gmail.com](mailto:isaackmutembei335@gmail.com)  
+💬 WhatsApp: [Chat Now](https://wa.me/254110457706)
+""")
+st.markdown("""
+If you've forgotten your password, go to **Login → Forgot Password?**
+""")
+
+
