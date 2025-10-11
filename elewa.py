@@ -240,8 +240,10 @@ def profile_page(username):
                     pass
     st.divider()
     # Change password section
-    with st.expander("Change Password"):
-       st.subheader("Update Your Password")
+   # ✅ Entire password section inside expander
+with st.expander("🔒 Change Password"):
+    st.markdown("### Update Your Password")  # optional header inside dropdown
+
     with st.form("change_password_form"):
         old_pass = st.text_input("Old Password", type="password")
         new_pass = st.text_input("New Password", type="password")
@@ -269,7 +271,8 @@ def profile_page(username):
                 else:
                     st.error("Incorrect old password.")
             except Exception as e:
-                st.error(f"An error occurred while changing password: {e}")
+                st.error(f"Error while changing password: {e}")
+
 def delete_user(username):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
