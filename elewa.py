@@ -97,7 +97,8 @@ def create_admin_account():
     username = "isaack sani" 
     password = "imisaack2000" 
     conn = sqlite3.connect("users.db") 
-    c = conn.cursor() hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt()) 
+    c = conn.cursor() 
+    hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt()) 
 try: 
   c.execute("INSERT INTO users (username, password, is_admin) VALUES (?, ?, 1)", (username, hashed_pass)) 
   conn.commit() 
