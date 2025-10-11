@@ -416,6 +416,7 @@ elif choice == "Register":
         password = st.text_input("Create Password", type="password")
         confirm_password = st.text_input("Confirm Password", type="password")
         submit = st.form_submit_button("Register")
+
         if submit:
             if not username or not password:
                 st.warning("Please fill in all fields.")
@@ -442,13 +443,14 @@ elif choice == "Register":
                     st.session_state.username = username
                     st.session_state.is_admin = False
 
+
 elif choice == "Change Password":
     if not st.session_state.logged_in:
         st.warning("Please log in first.")
         st.session_state.nav_selection = "Login"
         st.stop()
 
-    st.title(" Change Your Password")
+    st.title("🔒 Change Your Password")
     old_password = st.text_input("Enter your current password", type="password")
     new_password = st.text_input("Enter your new password", type="password")
     confirm_password = st.text_input("Confirm new password", type="password")
@@ -460,9 +462,12 @@ elif choice == "Change Password":
             st.error("New passwords do not match.")
         else:
             if change_password(st.session_state.username, old_password, new_password):
-                st.success(" Your password has been changed successfully.")
+                st.success("✅ Your password has been changed successfully.")
             else:
-                st.error(" Incorrect old password. Please try again.")
+                st.error("❌ Incorrect old password. Please try again.")
+
+
+# ✅ Function must be OUTSIDE the if/elif structure
 def reset_password(username, new_password):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
@@ -477,16 +482,19 @@ def reset_password(username, new_password):
         return True
     conn.close()
     return False
+
+
 elif choice == "Logout":
     if st.session_state.logged_in:
         log_session(st.session_state.username, 'logout')
-        log_user_activity(st.session_state.username, "Logged out") # Log logout
+        log_user_activity(st.session_state.username, "Logged out")  # Log logout
         st.session_state.logged_in = False
         st.session_state.username = ''
         st.session_state.is_admin = False
         st.success("You have been logged out.")
         st.session_state.nav_selection = "Login"
         st.rerun()
+
 elif choice == "Admin Dashboard":
     if not st.session_state.logged_in:
         st.error("You must log in to access this page.")
