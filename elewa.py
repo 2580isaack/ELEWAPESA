@@ -329,7 +329,7 @@ if choice == "Login":
                     st.success(f"Welcome back, {username}! Redirecting to Home...")
                     st.session_state.nav_selection = "Home"
                     st.rerun()
-                else:
+            else:
                     st.error("Invalid user login details")
             elif login_type == "Admin":
                 conn = sqlite3.connect("users.db")
