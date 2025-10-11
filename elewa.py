@@ -1112,14 +1112,16 @@ elif choice == "Mobile money Monitor":
     if st.session_state.logged_in:
         st.title("Real-time Mobile money Monitoring")
         st.markdown("Integration in progress... Live API connectivity will display here once credentials are set.")
-st.set_page_config(page_title="ElewaPesa Dashboard", layout="wide")
-st.title("ElewaPesa – Smart Financial Literacy Dashboard")
-st.write("Welcome to the ElewaPesa dashboard! Analyze youth financial behaviors and trends.")
-# --- GLOBAL FOOTER ---
+st.set_page_config(page_title="Elewa Pesa Dashboard", layout="wide")
+st.title("ElPesa ")
+st.write("ElPesa,  Smart Financial Literacy, Analyze youth financial behaviors and trends.")
+
 st.markdown("""
 ---
 **Contact Us**  
-📞 +254 110 457 706      📧 [isaackmutembei335@gmail.com](mailto:isaackmutembei335@gmail.com)      💬 WhatsApp: [Chat Now](https://wa.me/254110457706)
+📞 +254 110 457 706      
+📧 [isaackmutembei335@gmail.com](mailto:isaackmutembei335@gmail.com)    
+💬 WhatsApp: [Chat Now](https://wa.me/254110457706)
 """)
 
 
