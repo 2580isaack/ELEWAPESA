@@ -16,5 +16,6 @@ The project simulates real-life financial data to analyze saving habits, income 
 - **Language:** Python  
 - **Libraries:** Streamlit, Pandas, NumPy, Matplotlib, Scikit-learn  
 - **Environment:** Google Colab  
-- **Deployment:** Streamlit Cloud  
-  ![login page](https://github.com/2580isaack/ELEWAPESA/blob/main/elewapesa%20literature%201.png)
+- **Deployment:** Streamlit Cloud
+![login page screenshot](https://github.com/2580isaack/ELEWAPESA/blob/main/ELEWA%20LOGIN%20PAGE.png)
+  ![literature page](https://github.com/2580isaack/ELEWAPESA/blob/main/elewapesa%20literature%201.png)
