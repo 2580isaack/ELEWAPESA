@@ -71,17 +71,34 @@ def init_db():
 init_db()
 def add_user(username, password, is_admin=0):
     conn = sqlite3.connect("users.db")
+    c = conn.cursor()   # ✔️ You forgot this line
+
+    # Check if user exists
     c.execute("SELECT username FROM users WHERE username = ?", (username,))
     if c.fetchone():
         conn.close()
         return False
+
+    # Hash password
     hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-    c.execute("INSERT INTO users (username, password, is_admin) VALUES (?, ?, ?)",
-              (username, hashed, is_admin))
+
+    # Insert into database
+    c.execute(
+        "INSERT INTO users (username, password, is_admin) VALUES (?, ?, ?)",
+        (username, hashed, is_admin)
+    )
+
     conn.commit()
     conn.close()
     return True
-add_user("newadmin", "newpass123", is_admin=1)
+
+
+# -----------------------------------------------------
+# RUN THIS ONLY ONCE, THEN COMMENT IT OUT
+# -----------------------------------------------------
+
+# add_user("newadmin", "newpass123", is_admin=1)
+
 
 def check_login(username, password):
     conn = sqlite3.connect("users.db")
