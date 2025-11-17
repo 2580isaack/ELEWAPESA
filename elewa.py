@@ -92,7 +92,7 @@ def add_user(username, password, is_admin=0):
     conn.close()
     return True
 
- add_user("newadmin", "newpass123", is_admin=1)
+add_user("newadmin", "newpass123", is_admin=1)
 
 
 def check_login(username, password):
