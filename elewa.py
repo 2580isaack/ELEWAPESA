@@ -81,24 +81,13 @@ def add_user(username, password, is_admin=0):
     conn.commit()
     conn.close()
     return True
-#################################
-def delete_all_admins():
-    conn = sqlite3.connect("users.db")
-    c = conn.cursor()
-
-    # Delete all admin users
-    c.execute("DELETE FROM users WHERE is_admin = 1")
-
-    conn.commit()
-    conn.close()
-    print("All admin accounts deleted successfully.")
 
  # --- TEMPORARY ADMIN CREATION (run only once) ---
-#try:
-    #add_user("isaacksani", "password123", is_admin=1)
-    #print("Default admin account created successfully.")
-#except Exception as e:
-    #print(f"Admin creation skipped or failed: {e}")
+try:
+    add_user("isaacksani", "password123", is_admin=1)
+    print("Default admin account created successfully.")
+except Exception as e:
+    print(f"Admin creation skipped or failed: {e}")
 ## --- REMOVE OR COMMENT THIS AFTER SUCCESSFUL RUN ---
 def check_login(username, password):
     conn = sqlite3.connect("users.db")
