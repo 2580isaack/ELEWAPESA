@@ -82,7 +82,7 @@ def add_user(username, password, is_admin=0):
     conn.close()
     return True
 #################################
- def delete_all_admins():
+def delete_all_admins():
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
 
