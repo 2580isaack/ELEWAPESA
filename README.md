@@ -19,3 +19,7 @@ The project simulates real-life financial data to analyze saving habits, income 
 - **Deployment:** Streamlit Cloud
 ![login page screenshot](https://github.com/2580isaack/ELEWAPESA/blob/main/ELEWA%20LOGIN%20PAGE.png)
   ![literature page](https://github.com/2580isaack/ELEWAPESA/blob/main/elewapesa%20literature%201.png)
+  ![about page](https://github.com/2580isaack/ELEWAPESA/blob/main/ELEWA%20ADMIN.png)
+  ![profile page](https://github.com/2580isaack/ELEWAPESA/blob/main/ELEWA%20PROFILE.png)
+  ![budgeting page](https://github.com/2580isaack/ELEWAPESA/blob/main/elewapesa%20budgeting.png
+)
